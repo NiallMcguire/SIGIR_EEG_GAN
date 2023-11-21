@@ -234,3 +234,160 @@ def add_stimulus_to_raw(raw):
     raw.add_channels([stim_raw], force_update_info=True)
 
     return raw
+
+
+def average_rereference(raw):
+    """
+    Re-reference the EEG data to the average of all the EEG channels.
+
+    Parameters:
+    ----------
+    raw : mne.io.Raw
+        The raw EEG data to be re-referenced.
+
+    Returns:
+    -------
+    mne.io.Raw
+        The re-referenced EEG data.
+    """
+    # Apply average re-referencing
+    # Ensuring only EEG channels are considered for re-referencing
+    raw = raw.set_eeg_reference(ref_channels='average', projection=False, ch_type='eeg', verbose=True)
+
+    return raw
+
+def bandpass_filter(raw, low_freq=0.5, high_freq=50):
+    # Apply bandpass filter using MNE
+    raw_filtered = raw.filter(l_freq=low_freq, h_freq=high_freq, filter_length='auto',
+                           l_trans_bandwidth=0.1, h_trans_bandwidth=0.5, method='fft',
+                           n_jobs=4, verbose=True)
+
+    return raw_filtered
+
+
+class ICAChannelSelection:
+    def __init__(self, n_component, data):
+        """
+        Initialize the ICAChannelSelection object.
+
+        Args:
+            n_component (int): Number of ICA components to decompose the data into.
+            data (mne.io.Raw): Raw EEG data for ICA decomposition.
+        """
+        self.n_component = n_component
+        self.data = data
+        self.ica = None
+
+    def fit_ica(self):
+        """
+        Fit ICA on the provided data.
+
+        Notes:
+            - If ICA has already been computed, this function won't recompute it.
+        """
+        if self.ica is None:
+            # Fit ICA directly on the data without filtering
+            self.ica = ICA(n_components=self.n_component, max_iter='auto', random_state=np.random.RandomState(42))
+            self.ica.fit(self.data)
+
+    def plot_ica(self):
+        """
+        Plot the decomposed ICA components.
+
+        Notes:
+            - Will automatically compute ICA if it hasn't been done before.
+        """
+        if self.ica is None:
+            self.fit_ica()
+        self.ica.plot_components()
+
+    def find_artifacts_components(self, artifact_type):
+        """
+        Identify and label ICA components that match known artifact patterns.
+
+        Args:
+            artifact_type (str): Type of artifact to identify. Choices: 'ecg', 'eog', 'emg'.
+        """
+        self.fit_ica()  # Ensure ICA is computed
+        self.ica.exclude = []  # Reset any previously excluded components
+
+        try:
+            # Identify components corresponding to the specified artifact type and label them
+            if artifact_type == 'ecg':
+                artifact_indices, artifact_scores = self.ica.find_bads_ecg(self.data, method='correlation',
+                                                                           threshold='auto')
+
+            elif artifact_type == 'eog':
+                artifact_indices, artifact_scores = self.ica.find_bads_eog(self.data, )
+
+            elif artifact_type == 'emg':
+                # Assuming you have a method similar to find_bads_muscle for EMG
+                artifact_indices, artifact_scores = self.ica.find_bads_muscle(
+                    self.data)  # Replace with your EMG detection method if different
+
+            else:
+                raise ValueError("Invalid artifact_type. Must be 'ecg', 'eog', or 'emg'.")
+
+            self.ica.exclude = artifact_indices
+            #print(f"{artifact_type.upper()} component(s) found:", self.ica.exclude)
+
+            # Optional diagnostic plots
+            self.ica.plot_scores(artifact_scores)
+            self.ica.plot_properties(self.data, picks=artifact_indices)
+            self.ica.plot_sources(self.data, show_scrollbars=False)
+
+        except Exception as e:
+            print(f"Error while processing {artifact_type.upper()} artifact: {str(e)}")
+
+    def find_combined_artifacts(self):
+        """
+        Identify and label ICA components for ECG, EOG, and EMG artifacts, in that order.
+
+        Returns:
+            list: Combined list of identified artifact ICA components.
+
+        Notes:
+            - The identified components from each artifact type are aggregated and returned.
+        """
+
+        # Identify and label ECG artifact components
+        self.find_artifacts_components('ecg')
+        ecg_components = self.ica.exclude
+
+        # Identify and label EOG artifact components
+        self.find_artifacts_components('eog')
+        eog_components = self.ica.exclude
+
+        # Identify and label EMG artifact components
+        self.find_artifacts_components('emg')
+        emg_components = self.ica.exclude
+
+        # Collate all the identified artifact components
+        combined_components = list(set(ecg_components + eog_components + emg_components))
+
+        # Display the combined artifact components and identified bad channels
+        #print("Combined artifact components:", combined_components)
+        #print("Identified bad channels:", self.data.info['bads'])
+
+        return combined_components
+
+    def apply_ica(self, components=None):
+        """
+        Use ICA to remove the specified artifact components from the data.
+
+        Args:
+            components (list, optional): List of ICA component indices to remove.
+                                         If not provided, will use the previously identified (excluded) components.
+
+        Returns:
+            mne.io.Raw: Cleaned EEG data with artifacts removed.
+        """
+        if self.ica is None:
+            self.fit_ica()
+
+        if components is None:
+            components = self.ica.exclude
+
+        # Apply ICA to remove specified artifact components
+        cleaned_data = self.ica.apply(self.data.copy(), exclude=components)
+        return cleaned_data
