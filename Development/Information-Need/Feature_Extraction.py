@@ -168,8 +168,10 @@ class FeatureExtraction:
         window_sec = 0.79  # secs
         sampls = sf * window_sec  # number of samples that we are going to use in each window. It is a sliging window side
         sampls_sti = rslt_df2.shape[0]  # samples in each stimuli interval;song (sample from start time to end time)
+
         n_window = sampls_sti / sampls  # number of window
         sampls_window = sampls_sti / n_window  # samples in each sliding window for feature extraction
+
         C = 41  # Number of EEG channels
 
         all_slide = []
@@ -376,7 +378,7 @@ class FeatureExtraction:
 
         # ***************************************************************************************#
         # PSD band from non-overlapped 2Hz
-
+        '''
         all_band = []
         for p in range(4, 40, 2):
             band = [p, p + 2]
@@ -388,9 +390,11 @@ class FeatureExtraction:
                     BPW_Ch.append(self.bandpower(values, sf, band, window_sec))
                 BPW_.append(BPW_Ch)
             all_band.append(BPW_)
+        '''
 
         # ***************************************************************************************#
 
+        '''
         Wavelet_ = []
         for index, item in enumerate(all_slide):  # calculate for each time slices
             data = pd.DataFrame(item)
@@ -400,6 +404,7 @@ class FeatureExtraction:
                 Wavelet = self.WE(self.DWT(values))
                 Wavelet_Ch.append(Wavelet)
             Wavelet_.append(Wavelet_Ch)
+        '''
 
         # ***************************************************************************************#
 
