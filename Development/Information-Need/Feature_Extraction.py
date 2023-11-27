@@ -450,7 +450,7 @@ class FeatureExtraction:
 
         if Feature_name != "WE":
             df_list = []
-            print(Feature_name)
+            #print(Feature_name)
             for x in range(0, len(dict[Feature_name])):
                 feature = dict[Feature_name][x]
                 Feature = Feature_name + str(x)
@@ -462,7 +462,9 @@ class FeatureExtraction:
                              '15' + Feature,
                              '16' + Feature, '17' + Feature, '18' + Feature,
                              '19' + Feature, '20' + Feature, '21' + Feature, '22' + Feature, '23' + Feature,
-                             '24' + Feature])
+                             '24' + Feature, "25" + Feature, "26" + Feature, "27" + Feature, "28" + Feature, "29" + Feature
+                             , "30" + Feature, "31" + Feature, "32" + Feature, "33" + Feature, "34" + Feature, "35" + Feature
+                             , "36" + Feature, "37" + Feature, "38" + Feature, "39" + Feature, "40" + Feature, "41" + Feature])
                 for x in range(0, len(feature)):
                     row_data = feature[x]
                     df.loc[len(df)] = row_data
@@ -475,10 +477,13 @@ class FeatureExtraction:
             df = pd.DataFrame(
                 columns=['1' + Feature, '2' + Feature, '3' + Feature, '4' + Feature, '5' + Feature, '6' + Feature,
                          '7' + Feature, '8' + Feature, '9' + Feature,
-                         '10' + Feature, '11' + Feature, '12' + Feature, '13' + Feature, '14' + Feature, '15' + Feature,
+                         '10' + Feature, '11' + Feature, '12' + Feature, '13' + Feature, '14' + Feature,
+                         '15' + Feature,
                          '16' + Feature, '17' + Feature, '18' + Feature,
                          '19' + Feature, '20' + Feature, '21' + Feature, '22' + Feature, '23' + Feature,
-                         '24' + Feature])
+                         '24' + Feature, "25" + Feature, "26" + Feature, "27" + Feature, "28" + Feature, "29" + Feature
+                    , "30" + Feature, "31" + Feature, "32" + Feature, "33" + Feature, "34" + Feature, "35" + Feature
+                    , "36" + Feature, "37" + Feature, "38" + Feature, "39" + Feature, "40" + Feature, "41" + Feature])
 
             FeatureData = dict[Feature]
             for x in range(0, len(FeatureData)):
@@ -489,8 +494,7 @@ class FeatureExtraction:
     def format_features(self, Feature_Dict):
         import json
 
-        Features = ["Mean", "SD", "Skewness", "Kurtosis", "Curve_length", "No_peaks", "Average_nonlinear_enegy",
-                    "ApEntropy", "all_band", "WE"]
+        Features = ['Mean', 'SD', 'Skewness', 'Kurtosis', 'Curve_length', 'No_peaks', 'Average_nonlinear_enegy']
         # Features = ["all_band5"]
         df_list = []
 
