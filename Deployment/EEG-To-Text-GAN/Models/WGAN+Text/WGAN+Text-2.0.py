@@ -117,7 +117,7 @@ def g_train_wgan(x, input_t):
 
     d_generated = disc_model(g_output)
     g_loss = -d_generated.mean()
-    print("G Loss:", g_loss)
+    #print("G Loss:", g_loss)
 
     # gradient backprop & optimize ONLY G's parameters
     g_loss.backward()
@@ -255,7 +255,7 @@ if __name__ == '__main__':
             # print("T:", t)
             for _ in range(critic_iterations):
                 d_loss = d_train_wgan(x, t)
-                print("D Loss:", d_loss)
+                #print("D Loss:", d_loss)
             d_losses.append(d_loss)
             g_losses.append(g_train_wgan(x, t))
 
