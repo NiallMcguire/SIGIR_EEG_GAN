@@ -11,13 +11,13 @@
 #SBATCH --export=ALL
 #
 # Run in the gpu partition (queue) with any GPU
-#SBATCH --partition=gpu --gres=gpu:A100 --mem-per-cpu=9600
+#SBATCH --partition=gpu --gres=gpu:A100 --mem-per-cpu=6000
 #
 # Specify project account (replace as required)
 #SBATCH --account=moshfeghi-pmwc
 #
 # Specify (hard) runtime (HH:MM:SS)
-#SBATCH --time=05:00:00
+#SBATCH --time=02:00:00
 #SBATCH --mail-user=niall.mcguire@strath.ac.uk
 #SBATCH --mail-type=ALL
 # Job name
