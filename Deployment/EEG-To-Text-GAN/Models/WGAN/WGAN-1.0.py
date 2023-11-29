@@ -126,7 +126,7 @@ def g_train_wgan(x):
     return g_loss.data.item()
 
 class Generator(nn.Module):
-    def __init__(self, noise_dim, word_embedding_dim, output_shape):
+    def __init__(self, noise_dim):
         super(Generator, self).__init__()
 
         self.noise_dim = noise_dim
@@ -142,7 +142,7 @@ class Generator(nn.Module):
 
 
 
-    def forward(self, noise, word_embedding):
+    def forward(self, noise):
         # Process noise
         noise = self.fc_noise(noise)
         noise = noise.view(noise.size(0), 1, 105, 8)
