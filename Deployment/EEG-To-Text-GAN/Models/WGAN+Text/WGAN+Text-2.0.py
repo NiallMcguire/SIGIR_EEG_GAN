@@ -245,8 +245,8 @@ if __name__ == '__main__':
     torch.manual_seed(1)
     critic_iterations = 5
     save_interval = 5
-    checkpoint_path = '/users/gxb18167/Datasets/Checkpoints/WGAN_Text_2.0/Textual_WGAN_GP_checkpoint_epoch_{}.pt'
-    final_model_path = '/users/gxb18167/Datasets/Checkpoints/WGAN_Text_2.0/Textual_WGAN_GP_model_final.pt'
+    checkpoint_path = '/users/gxb18167/Datasets/Checkpoints/WGAN_Text_2.0/checkpoint_epoch_{}.pt'
+    final_model_path = '/users/gxb18167/Datasets/Checkpoints/WGAN_Text_2.0/model_final.pt'
 
     for epoch in range(1, num_epochs + 1):
         gen_model.train()
