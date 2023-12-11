@@ -264,13 +264,7 @@ if __name__ == '__main__':
     image_size = (68, 9)
     n_filters = 32
 
-    # To load the lists from the file:
-    with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs.pkl",
-              'rb') as file:
-        EEG_word_level_embeddings = pickle.load(file)
-        EEG_word_level_labels = pickle.load(file)
-
-    path = r"C:\Users\gxb18167\PycharmProjects\SIGIR_EEG_GAN\Development\Information-Need\Data\stat_features\Participant_Features.pkl"
+    path = "/users/gxb18167/Datasets/InformationNeed/Participant_Features.pkl"
     # To load the lists from the file:
     with open(path, 'rb') as f:
         data = pickle.load(f)
@@ -296,8 +290,8 @@ if __name__ == '__main__':
     torch.manual_seed(1)
     critic_iterations = 5
     save_interval = 5
-    checkpoint_path = '/users/gxb18167/Datasets/Checkpoints/WGAN_2.0/checkpoint_epoch_{}.pt'
-    final_model_path = '/users/gxb18167/Datasets/Checkpoints/WGAN_2.0/model_final.pt'
+    checkpoint_path = '/users/gxb18167/Datasets/Checkpoints/InformationNeed/WGAN_2.0/checkpoint_epoch_{}.pt'
+    final_model_path = '/users/gxb18167/Datasets/Checkpoints/InformationNeed/WGAN_2.0/model_final.pt'
 
     for epoch in range(1, num_epochs + 1):
         gen_model.train()
