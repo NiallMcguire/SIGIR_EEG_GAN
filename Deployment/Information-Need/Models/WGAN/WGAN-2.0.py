@@ -296,7 +296,7 @@ if __name__ == '__main__':
     for epoch in range(1, num_epochs + 1):
         gen_model.train()
         d_losses, g_losses = [], []
-        for i, (x, _) in enumerate(trainloader):
+        for i, (x) in enumerate(trainloader):
             # print("T:", t)
             for _ in range(critic_iterations):
                 d_loss = d_train_wgan(x)
