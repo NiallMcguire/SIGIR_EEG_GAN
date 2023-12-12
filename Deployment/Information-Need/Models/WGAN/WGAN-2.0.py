@@ -264,7 +264,7 @@ if __name__ == '__main__':
     image_size = (68, 9)
     n_filters = 32
 
-    path = "/users/gxb18167/Datasets/InformationNeed/Participant_Features.pkl"
+    path = "/users/gxb18167/Datasets/Checkpoints/InformationNeed/Participant_Features.pkl"
     # To load the lists from the file:
     with open(path, 'rb') as f:
         data = pickle.load(f)
