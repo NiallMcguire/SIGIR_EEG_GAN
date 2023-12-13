@@ -4,6 +4,8 @@ import torch
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
+from torch import nn
+
 import Generate_Samples as gs
 
 
@@ -27,7 +29,7 @@ def get_selected_features(SearchFeatures, include_segments=2):
 
     return all_selected_eeg
 
-def get_search_x_y(SearchFeatures, label):
+def get_search_x_y(SearchFeatures, label, augmentation_factor=0, gen_model=None):
     X_data = []
     Y_Data = []
 
@@ -37,6 +39,14 @@ def get_search_x_y(SearchFeatures, label):
             #print(eeg.shape)
             X_data.append(eeg)
             Y_Data.append(label)
+
+    if augmentation_factor > 0:
+        augmentation_size = len(X_data)/100*augmentation_factor
+        print("Augmentation Size:", augmentation_size)
+        for i in range(int(augmentation_size)):
+            synthetic_eeg = gs.generate_synthetic_samples(gen_model=gen_model, EEG_word_level_embeddings=X_data)
+            X_data.append(synthetic_eeg)
+            Y_Data.append(label)
     return X_data, Y_Data
 
 def combine_data(NeedToSearch_X, CorrectSearch_X, IncorrectSearch_X, NeedToSearch_Y, CorrectSearch_Y, IncorrectSearch_Y):
@@ -44,7 +54,7 @@ def combine_data(NeedToSearch_X, CorrectSearch_X, IncorrectSearch_X, NeedToSearc
     Y_data = NeedToSearch_Y + CorrectSearch_Y[:len(NeedToSearch_X)] + IncorrectSearch_Y[:len(NeedToSearch_X)]
     return X_data, Y_data
 
-def get_all_subject_x_y(data, include_segments=2):
+def get_all_subject_x_y(data, include_segments=2, augmentation_factor=0, gen_model=None):
     X_data_all = []
     Y_data_all = []
 
@@ -54,13 +64,12 @@ def get_all_subject_x_y(data, include_segments=2):
     for key in data.keys():
         subject = data[key]
 
-
         NeedToSearchFeatures, CorrectSearchFeatures, IncorrectSearchFeatures = subject
         Selected_NeedToSearchFeatures = get_selected_features(NeedToSearchFeatures, include_segments)
         Selected_CorrectSearchFeatures = get_selected_features(CorrectSearchFeatures, include_segments)
         Selected_IncorrectSearchFeatures = get_selected_features(IncorrectSearchFeatures, include_segments)
 
-        NeedToSearch_X, NeedToSearch_Y = get_search_x_y(Selected_NeedToSearchFeatures, label=0)
+        NeedToSearch_X, NeedToSearch_Y = get_search_x_y(Selected_NeedToSearchFeatures, label=0, augmentation_factor=augmentation_factor, gen_model=gen_model)
         CorrectSearch_X, CorrectSearch_Y = get_search_x_y(Selected_CorrectSearchFeatures, label=1)
         IncorrectSearch_X, IncorrectSearch_Y = get_search_x_y(Selected_IncorrectSearchFeatures, label=1)
 
@@ -128,7 +137,7 @@ class Generator(nn.Module):
 if __name__ == "__main__":
     path = r"C:\Users\gxb18167\PycharmProjects\SIGIR_EEG_GAN\Development\Information-Need\Data\stat_features\Participant_Features.pkl"
     data = load_in_data(path)
-    X, Y = get_all_subject_x_y(data, include_segments=5)
+
     z_size = 100
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -140,9 +149,7 @@ if __name__ == "__main__":
     # Set the model to evaluation mode
     gen_model.eval()
 
-    gs.generate_synthetic_samples(gen_model=gen_model, EEG_word_level_embeddings=)
-
-
+    X, Y = get_all_subject_x_y(data, include_segments=5, augmentation_factor=40, gen_model=gen_model)
 
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=1)
     clf = RandomForestClassifier(max_depth=20, random_state=0)
