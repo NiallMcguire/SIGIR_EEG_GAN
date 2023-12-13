@@ -60,16 +60,16 @@ def get_all_subject_x_y(data, include_segments=2):
 
         NeedToSearchFeatures, CorrectSearchFeatures, IncorrectSearchFeatures = subject
         Selected_NeedToSearchFeatures = get_selected_features(NeedToSearchFeatures, include_segments)
-        Selected_CorrectSearchFeatures = get_selected_features(CorrectSearchFeatures, include_segments)
-        Selected_IncorrectSearchFeatures = get_selected_features(IncorrectSearchFeatures, include_segments)
+        #Selected_CorrectSearchFeatures = get_selected_features(CorrectSearchFeatures, include_segments)
+        #Selected_IncorrectSearchFeatures = get_selected_features(IncorrectSearchFeatures, include_segments)
 
         NeedToSearch_X, NeedToSearch_Y = get_search_x_y(Selected_NeedToSearchFeatures, label=0)
-        CorrectSearch_X, CorrectSearch_Y = get_search_x_y(Selected_CorrectSearchFeatures, label=1)
-        IncorrectSearch_X, IncorrectSearch_Y = get_search_x_y(Selected_IncorrectSearchFeatures, label=1)
+        #CorrectSearch_X, CorrectSearch_Y = get_search_x_y(Selected_CorrectSearchFeatures, label=1)
+        #IncorrectSearch_X, IncorrectSearch_Y = get_search_x_y(Selected_IncorrectSearchFeatures, label=1)
 
-        X_data, Y_data = combine_data(NeedToSearch_X, CorrectSearch_X, IncorrectSearch_X, NeedToSearch_Y, CorrectSearch_Y, IncorrectSearch_Y)
-        X_data_all += X_data
-        Y_data_all += Y_data
+        #X_data, Y_data = combine_data(NeedToSearch_X, CorrectSearch_X, IncorrectSearch_X, NeedToSearch_Y, CorrectSearch_Y, IncorrectSearch_Y)
+        X_data_all += NeedToSearch_X
+        Y_data_all += NeedToSearch_Y
     return X_data_all, Y_data_all
 
 def create_dataloader(EEG_word_level_embeddings):
