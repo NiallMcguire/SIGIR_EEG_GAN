@@ -1,4 +1,5 @@
 import pickle
+import random
 from collections import Counter
 from math import floor
 
@@ -212,7 +213,7 @@ if __name__ == "__main__":
     gen_model.eval()
 
 
-    NeedToSearch_X_data_all, NeedToSearch_Y_data_all, CorrectSearch_X_data_all, CorrectSearch_Y_data_all, IncorrectSearch_X_data_all, IncorrectSearch_Y_data_all = get_all_subject_x_y(data, include_segments=6)
+    NeedToSearch_X_data_all, NeedToSearch_Y_data_all, CorrectSearch_X_data_all, CorrectSearch_Y_data_all, IncorrectSearch_X_data_all, IncorrectSearch_Y_data_all = get_all_subject_x_y(data, include_segments=10)
 
 
     NeedToSearch_X_train, NeedToSearch_X_test, NeedToSearch_y_train, NeedToSearch_y_test = train_test_split(NeedToSearch_X_data_all, NeedToSearch_Y_data_all, test_size=0.2, random_state=1)
@@ -224,7 +225,7 @@ if __name__ == "__main__":
     NeedToSearch_augmented_Y = []
 
     #segment 10, augmentation 20
-    augmentation_factor = 0
+    augmentation_factor = 20
     for index in range(floor((len(NeedToSearch_X_train)/100)*augmentation_factor)):
         synthetic_sample = gs.generate_synthetic_samples(gen_model, NeedToSearch_X_train)
         NeedToSearch_augmented_X.append(synthetic_sample)
@@ -242,14 +243,18 @@ if __name__ == "__main__":
     X_test = NeedToSearch_X_test + CorrectSearch_X_test[:equal_size_test] + IncorrectSearch_X_test[:equal_size_test]
     y_test = NeedToSearch_y_test + CorrectSearch_y_test[:equal_size_test] + IncorrectSearch_y_test[:equal_size_test]
 
-    print(Counter(y_train))
-    print(Counter(y_test))
+    combined_data = list(zip(X_train, y_train))
+    random.shuffle(combined_data)
 
+    X_train, y_train = zip(*combined_data)
+
+    combined_data_test = list(zip(X_test, y_test))
+    random.shuffle(combined_data_test)
+
+    X_test, y_test = zip(*combined_data_test)
 
     clf = RandomForestClassifier(max_depth=20, random_state=0)
     clf.fit(X_train, y_train)
-
-
 
 
     get_metrics(clf, X_test, y_test)

@@ -255,6 +255,7 @@ if __name__ == '__main__':
         device = "cpu"
 
 
+
     batch_size = 64
     word_embedding_dim = 50
     output_shape = (1, 68, 9)
@@ -263,13 +264,14 @@ if __name__ == '__main__':
     z_size = 100
     image_size = (68, 9)
     n_filters = 32
+    segment_size = 10
 
     path = "/users/gxb18167/Datasets/Checkpoints/InformationNeed/Participant_Features.pkl"
     # To load the lists from the file:
     with open(path, 'rb') as f:
         data = pickle.load(f)
 
-    EEG_word_level_embeddings, Y = get_all_subject_x_y(data, include_segments=5)
+    EEG_word_level_embeddings, Y = get_all_subject_x_y(data, include_segments=segment_size)
 
     trainloader = create_dataloader(EEG_word_level_embeddings)
 
