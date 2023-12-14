@@ -264,7 +264,7 @@ if __name__ == '__main__':
     z_size = 100
     image_size = (68, 9)
     n_filters = 32
-    segment_size = 10
+    segment_size = 20
 
     path = "/users/gxb18167/Datasets/Checkpoints/InformationNeed/Participant_Features.pkl"
     # To load the lists from the file:

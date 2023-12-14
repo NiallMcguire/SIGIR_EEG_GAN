@@ -213,7 +213,7 @@ if __name__ == "__main__":
     gen_model.eval()
 
 
-    NeedToSearch_X_data_all, NeedToSearch_Y_data_all, CorrectSearch_X_data_all, CorrectSearch_Y_data_all, IncorrectSearch_X_data_all, IncorrectSearch_Y_data_all = get_all_subject_x_y(data, include_segments=10)
+    NeedToSearch_X_data_all, NeedToSearch_Y_data_all, CorrectSearch_X_data_all, CorrectSearch_Y_data_all, IncorrectSearch_X_data_all, IncorrectSearch_Y_data_all = get_all_subject_x_y(data, include_segments=2)
 
 
     NeedToSearch_X_train, NeedToSearch_X_test, NeedToSearch_y_train, NeedToSearch_y_test = train_test_split(NeedToSearch_X_data_all, NeedToSearch_Y_data_all, test_size=0.2, random_state=1)
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     NeedToSearch_augmented_Y = []
 
     #segment 10, augmentation 20
-    augmentation_factor = 20
+    augmentation_factor = 10
     for index in range(floor((len(NeedToSearch_X_train)/100)*augmentation_factor)):
         synthetic_sample = gs.generate_synthetic_samples(gen_model, NeedToSearch_X_train)
         NeedToSearch_augmented_X.append(synthetic_sample)
