@@ -9,7 +9,7 @@ import pandas as pd
 import torch
 from matplotlib import pyplot as plt
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score, classification_report, confusion_matrix
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.ensemble import RandomForestClassifier
 from torch import nn
 
@@ -215,21 +215,70 @@ if __name__ == "__main__":
 
     NeedToSearch_X_data_all, NeedToSearch_Y_data_all, CorrectSearch_X_data_all, CorrectSearch_Y_data_all, IncorrectSearch_X_data_all, IncorrectSearch_Y_data_all = get_all_subject_x_y(data, include_segments=10)
 
-
+    '''
     NeedToSearch_X_train, NeedToSearch_X_test, NeedToSearch_y_train, NeedToSearch_y_test = train_test_split(NeedToSearch_X_data_all, NeedToSearch_Y_data_all, test_size=0.2, random_state=1)
+    
     CorrectSearch_X_train, CorrectSearch_X_test, CorrectSearch_y_train, CorrectSearch_y_test = train_test_split(CorrectSearch_X_data_all, CorrectSearch_Y_data_all, test_size=0.2, random_state=1)
     IncorrectSearch_X_train, IncorrectSearch_X_test, IncorrectSearch_y_train, IncorrectSearch_y_test = train_test_split(IncorrectSearch_X_data_all, IncorrectSearch_Y_data_all, test_size=0.2, random_state=1)
-
+    '''
 
     NeedToSearch_augmented_X = []
     NeedToSearch_augmented_Y = []
 
+    train_size = (len(NeedToSearch_X_data_all)/100)*80
     #segment 10, augmentation 20
-    augmentation_factor = 10
-    for index in range(floor((len(NeedToSearch_X_train)/100)*augmentation_factor)):
-        synthetic_sample = gs.generate_synthetic_samples(gen_model, NeedToSearch_X_train)
+    augmentation_factor = 90
+    for index in range(floor((train_size/100)*augmentation_factor)):
+        synthetic_sample = gs.generate_synthetic_samples(gen_model, NeedToSearch_X_data_all)
         NeedToSearch_augmented_X.append(synthetic_sample)
         NeedToSearch_augmented_Y.append(0)
+
+    sampled_correct_X_indices = random.sample(range(len(CorrectSearch_X_data_all)), floor(train_size)+len(NeedToSearch_augmented_X))
+    #print(sampled_correct_X_indices)
+    CorrectSearch_X = [CorrectSearch_X_data_all[i] for i in sampled_correct_X_indices]
+    CorrectSearch_Y = [CorrectSearch_Y_data_all[i] for i in sampled_correct_X_indices]
+
+    sampled_incorrect_X_indices = random.sample(range(len(IncorrectSearch_X_data_all)), floor(train_size/2)+len(NeedToSearch_augmented_X))
+    IncorrectSearch_X = [IncorrectSearch_X_data_all[i] for i in sampled_incorrect_X_indices]
+    IncorrectSearch_Y = [IncorrectSearch_Y_data_all[i] for i in sampled_incorrect_X_indices]
+
+    X = NeedToSearch_X_data_all+CorrectSearch_X
+    Y = NeedToSearch_Y_data_all+CorrectSearch_Y
+
+    n_splits = 5
+    kf = KFold(n_splits=n_splits, shuffle=True, random_state=42)
+
+    fold_accuracy = []
+
+
+    for train_index, test_index in kf.split(X):
+        X_train, X_test = [X[i] for i in train_index], [X[i] for i in test_index]
+        y_train, y_test = [Y[i] for i in train_index], [Y[i] for i in test_index]
+
+        X_train += NeedToSearch_augmented_X
+        y_train += NeedToSearch_augmented_Y
+
+
+        combined_data = list(zip(X_train, y_train))
+        random.shuffle(combined_data)
+
+        X_train, y_train = zip(*combined_data)
+
+        print(len(X_train), len(y_train))
+
+        print(Counter(y_train))
+        print(Counter(y_test))
+
+        clf = RandomForestClassifier(max_depth=20, random_state=0)
+        clf.fit(X_train, y_train)
+
+        accuracy = get_metrics(clf, X_test, y_test)
+        fold_accuracy.append(accuracy)
+
+        create_confusion_matrix_plot(clf, X_test, y_test, ['0', '1'], show_plot=True)
+
+    print("Avg Accuracy: ", sum(fold_accuracy)/n_splits)
+    '''
 
     NeedToSearch_X_train = NeedToSearch_X_train + NeedToSearch_augmented_X
     NeedToSearch_y_train = NeedToSearch_y_train + NeedToSearch_augmented_Y
@@ -243,6 +292,7 @@ if __name__ == "__main__":
     X_test = NeedToSearch_X_test + CorrectSearch_X_test[:equal_size_test] + IncorrectSearch_X_test[:equal_size_test]
     y_test = NeedToSearch_y_test + CorrectSearch_y_test[:equal_size_test] + IncorrectSearch_y_test[:equal_size_test]
 
+    
     combined_data = list(zip(X_train, y_train))
     random.shuffle(combined_data)
 
@@ -260,3 +310,4 @@ if __name__ == "__main__":
     get_metrics(clf, X_test, y_test)
 
     create_confusion_matrix_plot(clf, X_test, y_test, ['0', '1'], show_plot=True)
+    '''
