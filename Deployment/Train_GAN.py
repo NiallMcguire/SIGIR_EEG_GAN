@@ -53,8 +53,6 @@ def g_train(x):
     :param x: The real EEG data
     :return: The generator loss
     """
-
-
     gen_model.zero_grad()
 
     batch_size = x.size(0)
