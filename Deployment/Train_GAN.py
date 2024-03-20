@@ -180,6 +180,9 @@ if __name__ == '__main__':
     elif model == "WGAN_v1":
         gen_model = Networks.GeneratorWGAN_v1(z_size).to(device)
         disc_model = Networks.DiscriminatorWGAN_v1(n_filters).to(device)
+    elif model == "WGAN_v2":
+        gen_model = Networks.GeneratorWGAN_v2(z_size).to(device)
+        disc_model = Networks.DiscriminatorWGAN_v2(n_filters).to(device)
 
     loss_fn = nn.BCELoss()
 
