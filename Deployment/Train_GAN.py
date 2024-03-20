@@ -425,7 +425,7 @@ if __name__ == '__main__':
     critic_iterations = 5
     save_interval = 5
 
-    model_parameters = f"Generation_size_{Generation_Size}_batch_size_{batch_size}_word_embedding_dim_{word_embedding_dim}_z_size_{z_size}_num_epochs_{num_epochs}_device_{device}_"
+    model_parameters = f"Generation_size_{Generation_Size}_batch_size_{batch_size}_g_d_learning_rate{g_learning_rate}_{d_learning_rate}_word_embedding_dim_{word_embedding_dim}_z_size_{z_size}_num_epochs_{num_epochs}_device_{device}_"
 
     model_folder_path = f'/users/gxb18167/Datasets/Checkpoints/{model}'
     if not os.path.exists(model_folder_path):
