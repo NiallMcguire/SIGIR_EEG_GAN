@@ -133,6 +133,28 @@ def gradient_penalty(real_data, generated_data, lambda_gp=10.0):
     gradients_norm = gradients.norm(2, dim=1)
     return lambda_gp * ((gradients_norm - 1)**2).mean()
 
+
+def gradient_penalty_text(real_data, generated_data, input_t, lambda_gp=10.0):
+    batch_size = real_data.size(0)
+
+    # Calculate interpolation
+    alpha = torch.rand(real_data.shape[0], 1, 1, 1, requires_grad=True, device=device)
+    #print("Gen:", generated_data.shape)
+    interpolated = alpha * real_data + (1 - alpha) * generated_data
+
+    # Calculate probability of interpolated examples
+    proba_interpolated = disc_model(interpolated, input_t)
+
+    # Calculate gradients of probabilities with respect to examples
+    gradients = torch_grad(outputs=proba_interpolated, inputs=interpolated,
+                           grad_outputs=torch.ones(proba_interpolated.size(), device=device),
+                           create_graph=True, retain_graph=True)[0]
+
+    gradients = gradients.view(batch_size, -1)
+    gradients_norm = gradients.norm(2, dim=1)
+    return lambda_gp * ((gradients_norm - 1)**2).mean()
+
+
 def d_train_wgan(x):
     disc_model.zero_grad()
 
@@ -169,6 +191,38 @@ def g_train_wgan(x):
     g_optimizer.step()
 
     return g_loss.data.item()
+
+
+## Train the discriminator
+def d_train_wgan_text(x, input_t):
+
+    #Init gradient
+    disc_model.zero_grad()
+
+    batch_size = x.size(0)
+    x = x.to(device)
+
+    #Discriminating Real Images
+    d_real = disc_model(x, input_t)
+
+    #Building Z
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
+    #Building Fake T
+    fake_t = torch.zeros(batch_size, word_embedding_dim).to(device)
+
+    #Generating Fake Images
+    g_output = gen_model(input_z, fake_t)
+
+    #Discriminating Fake Images
+    d_generated = disc_model(g_output, input_t)
+
+    d_loss = d_generated.mean() - d_real.mean() + gradient_penalty_text(x.data, g_output.data, input_t)
+
+    d_loss.backward()
+    d_optimizer.step()
+
+    return d_loss.data.item()
+
 
 
 if __name__ == '__main__':
@@ -296,14 +350,18 @@ if __name__ == '__main__':
         }, final_model_path)
 
 
-    elif model == "WGAN_v1":
+    elif model == "WGAN_v1" or model == "WGAN_v2" or model == "WGAN_v1_Text" or model == "WGAN_v2_Text":
         for epoch in range(1, num_epochs + 1):
             gen_model.train()
             d_losses, g_losses = [], []
-            for i, (x, _) in enumerate(trainloader):
+            for i, (x, t) in enumerate(trainloader):
                 for _ in range(critic_iterations):
-                    d_loss = d_train_wgan(x)
-                d_losses.append(d_loss)
+                    if model == "WGAN_v1" or model == "WGAN_v2":
+                        d_loss = d_train_wgan(x)
+                        d_losses.append(d_loss)
+                    else:
+                        d_loss = d_train_wgan_text(x, t)
+                        d_losses.append(d_loss)
                 g_losses.append(g_train_wgan(x))
 
             print(f'Epoch {epoch:03d} | D Loss >>'
