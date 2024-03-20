@@ -237,3 +237,38 @@ if __name__ == '__main__':
             'g_losses': g_losses,
         }, final_model_path)
 
+
+    elif model == "WGAN_v1":
+        for epoch in range(1, num_epochs + 1):
+            gen_model.train()
+            d_losses, g_losses = [], []
+            for i, (x, _) in enumerate(trainloader):
+                for _ in range(critic_iterations):
+                    d_loss = d_train_wgan(x)
+                d_losses.append(d_loss)
+                g_losses.append(g_train_wgan(x))
+
+            print(f'Epoch {epoch:03d} | D Loss >>'
+                  f' {torch.FloatTensor(d_losses).mean():.4f}')
+            print(f'Epoch {epoch:03d} | G Loss >>'
+                  f' {torch.FloatTensor(g_losses).mean():.4f}')
+
+            # Save checkpoints at regular intervals
+            if epoch % save_interval == 0:
+                torch.save({
+                    'epoch': epoch,
+                    'gen_model_state_dict': gen_model.state_dict(),
+                    'optimizer_state_dict': g_optimizer.state_dict(),
+                    'd_losses': d_losses,
+                    'g_losses': g_losses,
+                }, checkpoint_path.format(epoch))
+
+        # Save the final model after training is complete
+        torch.save({
+            'epoch': num_epochs,
+            'gen_model_state_dict': gen_model.state_dict(),
+            'optimizer_state_dict': g_optimizer.state_dict(),
+            'd_losses': d_losses,
+            'g_losses': g_losses,
+        }, final_model_path)
+
