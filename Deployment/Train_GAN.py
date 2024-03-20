@@ -82,7 +82,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('model', type=str, help='Select model by prefix: DCGAN_v1, ')
+    parser.add_argument('--model', type=str, help='Select model by prefix: DCGAN_v1, ')
 
     args = parser.parse_args()
     model = args.model
