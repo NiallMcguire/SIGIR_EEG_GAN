@@ -15,7 +15,7 @@ class Data:
     def __init__(self):
         pass
 
-    def create_word_label_embeddings(self, Word_Labels_List, EEG_word_level_labels, word_embedding_dim=100):
+    def create_word_label_embeddings(self, Word_Labels_List, word_embedding_dim=100):
         """
         This function takes in the list of words associated with EEG segments and returns the word embeddings for each word
 
@@ -31,7 +31,7 @@ class Data:
         print("Number of word embeddings:", len(word_embeddings))
 
         Embedded_Word_labels = []
-        for word in EEG_word_level_labels:
+        for word in Word_Labels_List:
             Embedded_Word_labels.append(word_embeddings[word])
 
         return Embedded_Word_labels, word_embeddings
