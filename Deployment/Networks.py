@@ -670,3 +670,87 @@ class DiscriminatorWGAN_v2_Text(nn.Module):
 
         output = self.network(combined_input)
         return output
+
+
+
+class GeneratorDCGAN_v1_Sentence(nn.Module):
+    def __init__(self, noise_dim, word_embedding_dim):
+        super(GeneratorDCGAN_v1_Sentence, self).__init__()
+
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self.noise_dim = noise_dim
+        self.word_embedding_dim = word_embedding_dim
+
+        # Define the layers of your generator
+        self.fc_noise = nn.Linear(noise_dim, 105 * 456)
+        self.fc_word_embedding = nn.Linear(word_embedding_dim, 105 * 456)
+        self.conv1 = nn.Conv2d(2, 64, kernel_size=3, stride=1, padding=1)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.relu = nn.ReLU()
+        self.conv2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+
+
+
+    def forward(self, noise, word_embedding):
+        # Process noise
+        noise = self.fc_noise(noise)
+        noise = noise.view(noise.size(0), 1, 105, 456)
+
+        # Process word embedding
+        word_embedding = self.fc_word_embedding(word_embedding.to(self.device))
+        word_embedding = word_embedding.view(word_embedding.size(0), 1, 105, 456)
+
+        print("word_embedding:", word_embedding.shape)
+        print("input:", noise.shape)
+
+        # Concatenate noise and word embedding
+        combined_input = torch.cat([noise, word_embedding], dim=1)
+
+        print("combined_input:", combined_input.shape)
+
+        # Upsample and generate the output
+        z = self.conv1(combined_input)
+        z = self.bn1(z)
+        z = self.relu(z)
+        z = self.conv2(z)
+
+        return z
+
+class DiscriminatorDCGAN_v1_Sentence(nn.Module):
+    def __init__(self, n_filters, word_embedding_dim):
+        super(DiscriminatorDCGAN_v1_Sentence, self).__init__()
+
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        self.word_embedding_dim = word_embedding_dim
+        self.fc_word_embedding = nn.Linear(word_embedding_dim, 105 * 456)
+
+        self.network = nn.Sequential(
+            nn.Conv2d(2, n_filters, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.LeakyReLU(0.2),
+
+            nn.Conv2d(n_filters, n_filters*2, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.InstanceNorm2d(n_filters * 2),
+            nn.LeakyReLU(0.2),
+
+            nn.Conv2d(n_filters*2, n_filters*4, kernel_size=3, stride=2, padding=1, bias=False),
+            nn.InstanceNorm2d(n_filters*4),
+            nn.LeakyReLU(0.2),
+
+            nn.Flatten(),  # Flatten spatial dimensions
+
+            # Fully connected layer to reduce to a single value per sample
+            nn.Linear(n_filters*4 * (105 // 8) * (456 // 8), 1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, input, word_embedding):
+        word_embedding = self.fc_word_embedding(word_embedding.to(self.device))
+        word_embedding = word_embedding.view(word_embedding.size(0), 1, 105, 456)
+
+
+        combined_input = torch.cat([input, word_embedding], dim=1)
+
+        output = self.network(combined_input)
+        return output
