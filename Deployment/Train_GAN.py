@@ -69,6 +69,49 @@ def g_train(x):
 
     return g_loss.data.item()
 
+def d_train_text(x, T):
+    disc_model.zero_grad()
+
+    # Train discriminator with a real batch
+    batch_size = x.size(0)
+    x = x.to(device)
+    d_labels_real = torch.ones(batch_size, 1, device=device)
+
+    d_proba_real = disc_model(x)
+    d_loss_real = loss_fn(d_proba_real, d_labels_real)
+
+    # Train discriminator on a fake batch
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
+    g_output = gen_model(input_z, T)
+
+    d_proba_fake = disc_model(g_output)
+    d_labels_fake = torch.zeros(batch_size, 1, device=device)
+    d_loss_fake = loss_fn(d_proba_fake, d_labels_fake)
+
+    # gradient backprop & optimize ONLY D's parameters
+    d_loss = d_loss_real + d_loss_fake
+    d_loss.backward()
+    d_optimizer.step()
+
+    return d_loss.data.item(), d_proba_real.detach(), d_proba_fake.detach()
+
+def g_train_text(x, T):
+    gen_model.zero_grad()
+
+    batch_size = x.size(0)
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
+    g_labels_real = torch.ones((batch_size, 1), device=device)
+
+    g_output = gen_model(input_z, T)
+    d_proba_fake = disc_model(g_output)
+    g_loss = loss_fn(d_proba_fake, g_labels_real)
+
+    # gradient backprop & optimize ONLY G's parameters
+    g_loss.backward()
+    g_optimizer.step()
+
+    return g_loss.data.item()
+
 
 def gradient_penalty(real_data, generated_data, lambda_gp=10.0):
     batch_size = real_data.size(0)
@@ -162,7 +205,6 @@ if __name__ == '__main__':
         EEG_word_level_embeddings = pickle.load(file)
         EEG_word_level_labels = pickle.load(file)
 
-
     Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
     trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
 
@@ -186,6 +228,10 @@ if __name__ == '__main__':
     elif model == "DCGAN_v1_Text":
         gen_model = Networks.GeneratorDCGAN_v1_Text(z_size, word_embedding_dim).to(device)
         disc_model = Networks.DiscriminatorDCGAN_v1_Text(n_filters, word_embedding_dim).to(device)
+    elif model == "DCGAN_v2_Text":
+        gen_model = Networks.GeneratorDCGAN_v2_Text(z_size, word_embedding_dim).to(device)
+        disc_model = Networks.DiscriminatorDCGAN_v2_Text(n_filters, word_embedding_dim).to(device)
+
 
     loss_fn = nn.BCELoss()
 
@@ -207,15 +253,19 @@ if __name__ == '__main__':
     final_model_path = model_folder_path+'/'+model_parameters+'model_final.pt'
 
 
-    if model == "DCGAN_v1" or model == "DCGAN_v2":
+    if model == "DCGAN_v1" or model == "DCGAN_v2" or model == "DCGAN_v1_Text" or model == "DCGAN_v2_Text":
         for epoch in range(1, num_epochs + 1):
             gen_model.train()
             d_losses, g_losses = [], []
-            for i, (x, _) in enumerate(trainloader):
-                d_loss, d_proba_real, d_proba_fake = d_train(x)
-                d_losses.append(d_loss)
-                g_losses.append(g_train(x))
-
+            for i, (x, t) in enumerate(trainloader):
+                if model == "DCGAN_v1" or model == "DCGAN_v2":
+                    d_loss, d_proba_real, d_proba_fake = d_train(x)
+                    d_losses.append(d_loss)
+                    g_losses.append(g_train(x))
+                else:
+                    d_loss, d_proba_real, d_proba_fake = d_train_text(x, t)
+                    d_losses.append(d_loss)
+                    g_losses.append(g_train_text(x, t))
             print(f'Epoch {epoch:03d} | D Loss >>'
                   f' {torch.FloatTensor(d_losses).mean():.4f}')
             print(f'Epoch {epoch:03d} | G Loss >>'
@@ -230,7 +280,6 @@ if __name__ == '__main__':
                     'd_losses': d_losses,
                     'g_losses': g_losses,
                 }, checkpoint_path.format(epoch))
-
         # Save the final model after training is complete
         torch.save({
             'epoch': num_epochs,
@@ -265,7 +314,6 @@ if __name__ == '__main__':
                     'd_losses': d_losses,
                     'g_losses': g_losses,
                 }, checkpoint_path.format(epoch))
-
         # Save the final model after training is complete
         torch.save({
             'epoch': num_epochs,
