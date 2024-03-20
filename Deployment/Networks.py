@@ -550,6 +550,8 @@ class DiscriminatorWGAN_v1_Text(nn.Module):
     def __init__(self, n_filters, word_embedding_dim):
         super(DiscriminatorWGAN_v1_Text, self).__init__()
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         self.word_embedding_dim = word_embedding_dim
         self.fc_word_embedding = nn.Linear(word_embedding_dim, 105 * 8)
 
