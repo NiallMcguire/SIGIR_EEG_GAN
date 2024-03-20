@@ -1006,9 +1006,9 @@ class DiscriminatorWGAN_v2_Sentence(nn.Module):
 
 
 
-class GeneratorACGAN(nn.Module):
+class GeneratorACGAN_v1(nn.Module):
     def __init__(self, noise_dim, n_classes=5860):
-        super(GeneratorACGAN, self).__init__()
+        super(GeneratorACGAN_v1, self).__init__()
 
         self.noise_dim = noise_dim
         self.label_emb = nn.Embedding(n_classes, 100)
@@ -1042,9 +1042,9 @@ class GeneratorACGAN(nn.Module):
 
         return z
 
-class DiscriminatorACGAN(nn.Module):
+class DiscriminatorACGAN_v1(nn.Module):
     def __init__(self, n_filters):
-        super(DiscriminatorACGAN, self).__init__()
+        super(DiscriminatorACGAN_v1, self).__init__()
 
         self.network = nn.Sequential(
             nn.Conv2d(1, n_filters, kernel_size=4, stride=2, padding=1, bias=False),

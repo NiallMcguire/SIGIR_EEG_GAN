@@ -317,7 +317,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model', type=str, help='Select model by prefix: DCGAN_v1, DCGAN_v2, WGAN_v1, WGAN_v2, DCGAN_v1_Text, DCGAN_v2_Text, WGAN_v1_Text, WGAN_v2_Text')
+    parser.add_argument('--model', type=str, help='Select model by prefix: DCGAN_v1, DCGAN_v2, WGAN_v1, WGAN_v2, ACGAN_v1, ACGAN_v2, DCGAN_v1_Text, DCGAN_v2_Text, WGAN_v1_Text, WGAN_v2_Text')
     parser.add_argument('--Generation_Size', type=str, help='Word_Level, Contextual, Sentence_Level')
 
     args = parser.parse_args()
@@ -333,7 +333,6 @@ if __name__ == '__main__':
     #image_size = (105, 8)
     n_filters = 32
     n_classes = 5860
-
     # Create the data object
     data = Data.Data()
 
@@ -352,7 +351,7 @@ if __name__ == '__main__':
     elif Generation_Size == "Sentence_Level":
         EEG_sentence_list, list_of_sentences = data.create_word_label_embeddings_sentence(EEG_word_level_embeddings, EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
         trainloader = data.create_dataloader_sentence(EEG_sentence_list, list_of_sentences)
-    elif model == "ACGAN":
+    elif model == "ACGAN_v1" or model == "ACGAN_v2":
         encoder = LabelEncoder()
         Embedded_Word_labels = encoder.fit_transform(np.array(EEG_word_level_labels).reshape(-1, 1))
         Embedded_Word_labels = torch.tensor(Embedded_Word_labels, dtype=torch.float)
@@ -374,9 +373,9 @@ if __name__ == '__main__':
     elif model == "WGAN_v2":
         gen_model = Networks.GeneratorWGAN_v2(z_size).to(device)
         disc_model = Networks.DiscriminatorWGAN_v2(n_filters).to(device)
-    elif model == "ACGAN":
-        gen_model = Networks.GeneratorACGAN(z_size).to(device)
-        disc_model = Networks.DiscriminatorACGAN(n_filters).to(device)
+    elif model == "ACGAN_v1":
+        gen_model = Networks.GeneratorACGAN_v1(z_size).to(device)
+        disc_model = Networks.DiscriminatorACGAN_v1(n_filters).to(device)
 
     elif model == "DCGAN_v1_Text":
         if Generation_Size == "Sentence_Level":
