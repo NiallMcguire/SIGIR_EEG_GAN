@@ -376,6 +376,9 @@ if __name__ == '__main__':
     elif model == "ACGAN_v1":
         gen_model = Networks.GeneratorACGAN_v1(z_size).to(device)
         disc_model = Networks.DiscriminatorACGAN_v1(n_filters).to(device)
+    elif model == "ACGAN_v2":
+        gen_model = Networks.GeneratorACGAN_v2(z_size).to(device)
+        disc_model = Networks.DiscriminatorACGAN_v1(n_filters).to(device)
 
     elif model == "DCGAN_v1_Text":
         if Generation_Size == "Sentence_Level":
