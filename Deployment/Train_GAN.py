@@ -333,6 +333,9 @@ if __name__ == '__main__':
     #image_size = (105, 8)
     n_filters = 32
     n_classes = 5860
+    g_learning_rate = 0.00002
+    d_learning_rate = 0.00002
+
     # Create the data object
     data = Data.Data()
 
@@ -414,8 +417,8 @@ if __name__ == '__main__':
     auxiliary_loss = nn.CrossEntropyLoss()
     adversarial_loss = nn.BCELoss()
 
-    g_optimizer = torch.optim.Adam(gen_model.parameters(), 0.00002)
-    d_optimizer = torch.optim.Adam(disc_model.parameters(), 0.00002)
+    g_optimizer = torch.optim.Adam(gen_model.parameters(), g_learning_rate)
+    d_optimizer = torch.optim.Adam(disc_model.parameters(), d_learning_rate)
 
     num_epochs = 100
     torch.manual_seed(1)
