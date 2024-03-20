@@ -9,7 +9,7 @@ import pickle
 import torch
 import argparse
 import Networks
-import Data_Handeling
+import Data
 
 
 
@@ -32,7 +32,7 @@ def d_train(x):
     d_loss_real = loss_fn(d_proba_real, d_labels_real)
 
     # Train discriminator on a fake batch
-    input_z = create_noise(batch_size, z_size, mode_z).to(device)
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
     g_output = gen_model(input_z)
 
     d_proba_fake = disc_model(g_output)
@@ -58,7 +58,7 @@ def g_train(x):
     gen_model.zero_grad()
 
     batch_size = x.size(0)
-    input_z = create_noise(batch_size, z_size, mode_z).to(device)
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
     g_labels_real = torch.ones((batch_size, 1), device=device)
 
     g_output = gen_model(input_z)
@@ -89,15 +89,15 @@ if __name__ == '__main__':
 
     batch_size = 64
     word_embedding_dim = 50
-    output_shape = (1, 105, 8)
+    #output_shape = (1, 105, 8)
     torch.manual_seed(1)
     np.random.seed(1)
     z_size = 100
-    image_size = (105, 8)
+    #image_size = (105, 8)
     n_filters = 32
 
     # Create the data object
-    data = Data_Handeling.Data()
+    data = Data.Data()
 
     # To load the lists from the file:
     with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs.pkl",
