@@ -73,6 +73,13 @@ def create_noise(batch_size, z_size, mode_z):
 
 
 def d_train(x):
+    """
+    This function trains the discriminator
+
+    :param x: The real EEG data
+    :return: The discriminator loss, the probability of the real data, and the probability of the fake data
+    """
+
     disc_model.zero_grad()
 
     # Train discriminator with a real batch
@@ -98,8 +105,15 @@ def d_train(x):
 
     return d_loss.data.item(), d_proba_real.detach(), d_proba_fake.detach()
 
-## Train the generator
 def g_train(x):
+    """
+    This function trains the generator
+
+    :param x: The real EEG data
+    :return: The generator loss
+    """
+
+
     gen_model.zero_grad()
 
     batch_size = x.size(0)
@@ -117,35 +131,36 @@ def g_train(x):
     return g_loss.data.item()
 
 class Generator(nn.Module):
+    """
+    This class is the generator for the GAN
+    """
+
     def __init__(self, noise_dim):
+        """
+        The constructor for the generator
+
+        :param noise_dim: The latent input size
+        """
         super(Generator, self).__init__()
 
         self.noise_dim = noise_dim
-        #self.word_embedding_dim = word_embedding_dim
-
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105 * 8)
-        #self.fc_word_embedding = nn.Linear(word_embedding_dim, 105 * 8)
         self.conv1 = nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU()
         self.conv2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
-
-
     def forward(self, noise):
+        """
+        This function is the forward pass for the generator
+        :param noise: The noise for the generator
+        :return: Returns the synthetic EEG data
+        """
+
         # Process noise
         noise = self.fc_noise(noise)
         noise = noise.view(noise.size(0), 1, 105, 8)
 
-        # Process word embedding
-        #word_embedding = self.fc_word_embedding(word_embedding.to(device))
-        #word_embedding = word_embedding.view(word_embedding.size(0), 1, 105, 8)
-
-        # Concatenate noise and word embedding
-        #combined_input = torch.cat([noise, word_embedding], dim=1)
-
-        # Upsample and generate the output
         z = self.conv1(noise)
         z = self.bn1(z)
         z = self.relu(z)
@@ -154,7 +169,15 @@ class Generator(nn.Module):
         return z
 
 class DiscriminatorWGAN(nn.Module):
+    """
+    The class for the discriminator
+    """
+
     def __init__(self, n_filters):
+        """
+        The constructor for the discriminator
+        :param n_filters:
+        """
         super(DiscriminatorWGAN, self).__init__()
         self.network = nn.Sequential(
             nn.Conv2d(1, n_filters, kernel_size=4, stride=2, padding=1, bias=False),
@@ -176,6 +199,11 @@ class DiscriminatorWGAN(nn.Module):
         )
 
     def forward(self, input):
+        """
+        The forward pass for the discriminator
+        :param input:
+        :return: returns the probability of the input being real or fake
+        """
         output = self.network(input)
         return output
 
