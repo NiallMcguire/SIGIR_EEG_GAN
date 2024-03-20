@@ -105,7 +105,7 @@ if __name__ == '__main__':
         EEG_word_level_embeddings = pickle.load(file)
         EEG_word_level_labels = pickle.load(file)
 
-    if model == "DCGAN_v1" || model == "DCGAN_v2":
+    if model == "DCGAN_v1" or model == "DCGAN_v2":
         Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
 
