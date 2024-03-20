@@ -208,7 +208,6 @@ if __name__ == '__main__':
             d_losses, g_losses = [], []
             for i, (x, _) in enumerate(trainloader):
                 d_loss, d_proba_real, d_proba_fake = d_train(x)
-                print("D Loss:", d_loss)
                 d_losses.append(d_loss)
                 g_losses.append(g_train(x))
 
