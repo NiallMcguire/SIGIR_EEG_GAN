@@ -189,7 +189,6 @@ if __name__ == '__main__':
     g_optimizer = torch.optim.Adam(gen_model.parameters(), 0.00002)
     d_optimizer = torch.optim.Adam(disc_model.parameters(), 0.00002)
 
-    epoch_samples_wgan = []
     num_epochs = 100
     torch.manual_seed(1)
     critic_iterations = 5
