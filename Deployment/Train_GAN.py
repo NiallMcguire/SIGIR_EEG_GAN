@@ -288,17 +288,33 @@ if __name__ == '__main__':
         gen_model = Networks.GeneratorWGAN_v2(z_size).to(device)
         disc_model = Networks.DiscriminatorWGAN_v2(n_filters).to(device)
     elif model == "DCGAN_v1_Text":
-        gen_model = Networks.GeneratorDCGAN_v1_Text(z_size, word_embedding_dim).to(device)
-        disc_model = Networks.DiscriminatorDCGAN_v1_Text(n_filters, word_embedding_dim).to(device)
+        if Generation_Size == "Sentence_Level":
+            gen_model = Networks.GeneratorDCGAN_v1_Sentence(z_size, word_embedding_dim).to(device)
+            disc_model = Networks.DiscriminatorDCGAN_v1_Sentence(n_filters, word_embedding_dim).to(device)
+        else:
+            gen_model = Networks.GeneratorDCGAN_v1_Text(z_size, word_embedding_dim).to(device)
+            disc_model = Networks.DiscriminatorDCGAN_v1_Text(n_filters, word_embedding_dim).to(device)
     elif model == "DCGAN_v2_Text":
-        gen_model = Networks.GeneratorDCGAN_v2_Text(z_size, word_embedding_dim).to(device)
-        disc_model = Networks.DiscriminatorDCGAN_v2_Text(n_filters, word_embedding_dim).to(device)
+        if Generation_Size == "Sentence_Level":
+            gen_model = Networks.GeneratorDCGAN_v2_Sentence(z_size, word_embedding_dim).to(device)
+            disc_model = Networks.DiscriminatorDCGAN_v2_Sentence(n_filters, word_embedding_dim).to(device)
+        else:
+            gen_model = Networks.GeneratorDCGAN_v2_Text(z_size, word_embedding_dim).to(device)
+            disc_model = Networks.DiscriminatorDCGAN_v2_Text(n_filters, word_embedding_dim).to(device)
     elif model == "WGAN_v1_Text":
-        gen_model = Networks.GeneratorWGAN_v1_Text(z_size, word_embedding_dim).to(device)
-        disc_model = Networks.DiscriminatorWGAN_v1_Text(n_filters, word_embedding_dim).to(device)
+        if Generation_Size == "Sentence_Level":
+            gen_model = Networks.GeneratorWGAN_v1_Sentence(z_size, word_embedding_dim).to(device)
+            disc_model = Networks.DiscriminatorWGAN_v1_Sentence(n_filters, word_embedding_dim).to(device)
+        else:
+            gen_model = Networks.GeneratorWGAN_v1_Text(z_size, word_embedding_dim).to(device)
+            disc_model = Networks.DiscriminatorWGAN_v1_Text(n_filters, word_embedding_dim).to(device)
     elif model == "WGAN_v2_Text":
-        gen_model = Networks.GeneratorWGAN_v2_Text(z_size, word_embedding_dim).to(device)
-        disc_model = Networks.DiscriminatorWGAN_v2_Text(n_filters, word_embedding_dim).to(device)
+        if Generation_Size == "Sentence_Level":
+            gen_model = Networks.GeneratorWGAN_v2_Sentence(z_size, word_embedding_dim).to(device)
+            disc_model = Networks.DiscriminatorWGAN_v2_Sentence(n_filters, word_embedding_dim).to(device)
+        else:
+            gen_model = Networks.GeneratorWGAN_v2_Text(z_size, word_embedding_dim).to(device)
+            disc_model = Networks.DiscriminatorWGAN_v2_Text(n_filters, word_embedding_dim).to(device)
 
 
     loss_fn = nn.BCELoss()
