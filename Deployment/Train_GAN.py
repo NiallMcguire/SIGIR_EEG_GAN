@@ -70,7 +70,6 @@ def g_train(x):
     return g_loss.data.item()
 
 
-
 def gradient_penalty(real_data, generated_data, lambda_gp=10.0):
     batch_size = real_data.size(0)
 
