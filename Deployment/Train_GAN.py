@@ -231,6 +231,12 @@ if __name__ == '__main__':
     elif model == "DCGAN_v2_Text":
         gen_model = Networks.GeneratorDCGAN_v2_Text(z_size, word_embedding_dim).to(device)
         disc_model = Networks.DiscriminatorDCGAN_v2_Text(n_filters, word_embedding_dim).to(device)
+    elif model == "WGAN_v1_Text":
+        gen_model = Networks.GeneratorWGAN_v1_Text(z_size, word_embedding_dim).to(device)
+        disc_model = Networks.DiscriminatorWGAN_v1_Text(n_filters, word_embedding_dim).to(device)
+    elif model == "WGAN_v2_Text":
+        gen_model = Networks.GeneratorWGAN_v2_Text(z_size, word_embedding_dim).to(device)
+        disc_model = Networks.DiscriminatorWGAN_v2_Text(n_filters, word_embedding_dim).to(device)
 
 
     loss_fn = nn.BCELoss()
