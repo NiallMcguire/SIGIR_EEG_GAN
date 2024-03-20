@@ -10,16 +10,14 @@ import torch
 import argparse
 
 
-
 def create_word_label_embeddings(Word_Labels_List):
     """
     This function takes in the list of words associated with EEG segments and returns the word embeddings for each word
 
     :param Word_Labels_List: List of the textual data associated with EEG segments
-    :return Embedded_Word_labels: List of each words embeddings, word_embeddings: Dictionary of word embeddings
+    :return Embedded_Word_labels: List of each words embeddings
+    :return word_embeddings: Dictionary of word embeddings
     """
-
-
     tokenized_words = []
     for i in range(len(Word_Labels_List)):
         tokenized_words.append([Word_Labels_List[i]])
@@ -34,13 +32,20 @@ def create_word_label_embeddings(Word_Labels_List):
     return Embedded_Word_labels, word_embeddings
 
 def create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels):
-    EEG_word_level_embeddings_normalize = (EEG_word_level_embeddings - np.mean(EEG_word_level_embeddings)) / np.max(np.abs(EEG_word_level_embeddings))
+    """
+    This function takes in the EEG word level embeddings and the word labels and returns a dataloader
 
+    :param EEG_word_level_embeddings: The EEG segments of the associated textual information
+    :param Embedded_Word_labels: The word embeddings of the associated textual information
+    :return trainloader: The dataloader for the EEG word level embeddings and the word labels
+    """
+
+    EEG_word_level_embeddings_normalize = (EEG_word_level_embeddings - np.mean(EEG_word_level_embeddings)) / np.max(np.abs(EEG_word_level_embeddings))
 
     float_tensor = torch.tensor(EEG_word_level_embeddings_normalize, dtype=torch.float)
     float_tensor = float_tensor.unsqueeze(1)
 
-    # Calculate mean and standard deviation
+    #Sanity check
     print(torch.isnan(float_tensor).any())
 
     train_data = []
@@ -49,7 +54,17 @@ def create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels):
     trainloader = torch.utils.data.DataLoader(train_data, shuffle=True, batch_size=64)
     return trainloader
 
+
 def create_noise(batch_size, z_size, mode_z):
+    """
+    This function creates noise for the generator
+
+    :param batch_size: Batch size
+    :param z_size: Latent input size
+    :param mode_z: Mode of the noise
+    :return:
+    """
+
     if mode_z == 'uniform':
         input_z = torch.rand(batch_size, z_size)*2 - 1
     elif mode_z == 'normal':
@@ -57,8 +72,6 @@ def create_noise(batch_size, z_size, mode_z):
     return input_z
 
 
-
-## Train the discriminator
 def d_train(x):
     disc_model.zero_grad()
 
