@@ -223,6 +223,32 @@ def d_train_wgan_text(x, input_t):
 
     return d_loss.data.item()
 
+def g_train_wgan_text(x):
+
+    #Init gradient
+    gen_model.zero_grad()
+
+    #Building Z
+    batch_size = x.size(0)
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
+
+    #Building Fake T
+    fake_t = torch.zeros(batch_size, word_embedding_dim).to(device)
+
+    #Generating Fake Images
+    g_output = gen_model(input_z, fake_t)
+
+    #Discriminating Fake Images
+    d_generated = disc_model(g_output, fake_t)
+    g_loss = -d_generated.mean()
+    #print("G Loss:", g_loss)
+
+    # gradient backprop & optimize ONLY G's parameters
+    g_loss.backward()
+    g_optimizer.step()
+
+    return g_loss.data.item()
+
 
 
 ## Train the discriminator
@@ -482,7 +508,10 @@ if __name__ == '__main__':
                     else:
                         d_loss = d_train_wgan_text(x, t)
                         d_losses.append(d_loss)
-                g_losses.append(g_train_wgan(x))
+                if model == "WGAN_v1" or model == "WGAN_v2":
+                    g_losses.append(g_train_wgan(x))
+                else:
+                    g_losses.append(g_train_wgan_text(x))
 
             print(f'Epoch {epoch:03d} | D Loss >>'
                   f' {torch.FloatTensor(d_losses).mean():.4f}')
