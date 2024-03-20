@@ -3,7 +3,6 @@ import nltk
 import torch.nn as nn
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
-
 nltk.download('punkt')
 from torch.autograd import grad as torch_grad
 sys.path.insert(0, '..')
@@ -13,7 +12,6 @@ import argparse
 import Networks
 import Data
 import os
-
 
 
 def d_train(x):

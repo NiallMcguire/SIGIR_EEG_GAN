@@ -94,7 +94,6 @@ class GeneratorDCGAN_v2(nn.Module):
 
         self.noise_dim = noise_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105*8)  # Increase the size for more complexity
         self.conv1 = nn.Conv2d(1, 128, kernel_size=3, stride=1, padding=1)
         self.bn1 = nn.BatchNorm2d(128)
@@ -273,7 +272,6 @@ class GeneratorWGAN_v2(nn.Module):
         self.noise_dim = noise_dim
         #self.word_embedding_dim = word_embedding_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105*8)  # Increase the size for more complexity
 
         self.conv1 = nn.Conv2d(1, 128, kernel_size=3, stride=1, padding=1)
@@ -361,7 +359,6 @@ class GeneratorDCGAN_v1_Text(nn.Module):
         self.noise_dim = noise_dim
         self.word_embedding_dim = word_embedding_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105 * 8)
         self.fc_word_embedding = nn.Linear(word_embedding_dim, 105 * 8)
         self.conv1 = nn.Conv2d(2, 64, kernel_size=3, stride=1, padding=1)
@@ -435,7 +432,6 @@ class GeneratorDCGAN_v2_Text(nn.Module):
         self.noise_dim = noise_dim
         self.word_embedding_dim = word_embedding_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105*8)  # Increase the size for more complexity
         self.fc_word_embedding = nn.Linear(word_embedding_dim, 105*8)  # Increase the size for more complexity
         self.conv1 = nn.Conv2d(2, 128, kernel_size=3, stride=1, padding=1)
@@ -520,7 +516,6 @@ class GeneratorWGAN_v1_Text(nn.Module):
         self.noise_dim = noise_dim
         self.word_embedding_dim = word_embedding_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105 * 8)
         self.fc_word_embedding = nn.Linear(word_embedding_dim, 105 * 8)
         self.conv1 = nn.Conv2d(2, 64, kernel_size=3, stride=1, padding=1)
@@ -597,7 +592,6 @@ class GeneratorWGAN_v2_Text(nn.Module):
         self.noise_dim = noise_dim
         self.word_embedding_dim = word_embedding_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105*8)  # Increase the size for more complexity
         self.fc_word_embedding = nn.Linear(word_embedding_dim, 105*8)  # Increase the size for more complexity
         self.conv1 = nn.Conv2d(2, 128, kernel_size=3, stride=1, padding=1)
@@ -682,7 +676,6 @@ class GeneratorDCGAN_v1_Sentence(nn.Module):
         self.noise_dim = noise_dim
         self.word_embedding_dim = word_embedding_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105 * 456)
         self.fc_word_embedding = nn.Linear(word_embedding_dim, 105 * 456)
         self.conv1 = nn.Conv2d(2, 64, kernel_size=3, stride=1, padding=1)
@@ -764,7 +757,6 @@ class GeneratorDCGAN_v2_Sentence(nn.Module):
         self.noise_dim = noise_dim
         self.word_embedding_dim = word_embedding_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105*456)  # Increase the size for more complexity
         self.fc_word_embedding = nn.Linear(word_embedding_dim, 105*456)  # Increase the size for more complexity
         self.conv1 = nn.Conv2d(2, 128, kernel_size=3, stride=1, padding=1)
@@ -851,7 +843,6 @@ class GeneratorWGAN_v1_Sentence(nn.Module):
         self.noise_dim = noise_dim
         self.word_embedding_dim = word_embedding_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105 * 456)
         self.fc_word_embedding = nn.Linear(word_embedding_dim, 105 * 456)
         self.conv1 = nn.Conv2d(2, 64, kernel_size=3, stride=1, padding=1)
@@ -930,7 +921,6 @@ class GeneratorWGAN_v2_Sentence(nn.Module):
         self.noise_dim = noise_dim
         self.word_embedding_dim = word_embedding_dim
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105*456)  # Increase the size for more complexity
         self.fc_word_embedding = nn.Linear(word_embedding_dim, 105*456)  # Increase the size for more complexity
         self.conv1 = nn.Conv2d(2, 128, kernel_size=3, stride=1, padding=1)
@@ -1013,7 +1003,6 @@ class GeneratorACGAN_v1(nn.Module):
         self.noise_dim = noise_dim
         self.label_emb = nn.Embedding(n_classes, 100)
 
-        # Define the layers of your generator
         self.fc_noise = nn.Linear(noise_dim, 105 * 8)
         self.fc_word_embedding = nn.Linear(100, 105 * 8)
         self.conv1 = nn.Conv2d(2, 64, kernel_size=3, stride=1, padding=1)
