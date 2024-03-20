@@ -3,7 +3,6 @@ import nltk
 import torch.nn as nn
 import numpy as np
 nltk.download('punkt')
-from gensim.models import Word2Vec
 from torch.autograd import grad as torch_grad
 sys.path.insert(0, '..')
 import pickle
