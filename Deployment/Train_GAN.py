@@ -73,7 +73,7 @@ def g_train(x):
 
 
 
-def gradient_penalty(real_data, generated_data, lambda_gp = 10.0):
+def gradient_penalty(real_data, generated_data, lambda_gp=10.0):
     batch_size = real_data.size(0)
 
     # Calculate interpolation
