@@ -5,10 +5,8 @@ import numpy as np
 nltk.download('punkt')
 from gensim.models import Word2Vec
 sys.path.insert(0, '..')
-import pickle
 import torch
-import argparse
-import Networks
+
 
 
 class Data:
