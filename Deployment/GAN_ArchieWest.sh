@@ -43,7 +43,7 @@ module load anaconda/python-3.9.7/2021.11
 #Modify the line below to run your program. This is an example
 #=========================================================
  
-python /users/gxb18167/SIGIR_EEG_GAN/Deployment/EEG-To-Text-GAN/Models/DCGAN/DCGAN-1.0.py
+python /users/gxb18167/SIGIR_EEG_GAN/Deployment/Train_GAN.py
 
 # Do not change the line below
 #=========================================================

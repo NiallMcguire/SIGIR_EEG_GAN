@@ -81,9 +81,10 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('model', type=str, help='Select model by prefix:')
+    parser.add_argument('model', type=str, help='Select model by prefix: DCGAN_v1, ')
 
     args = parser.parse_args()
+    model = args.model
 
     batch_size = 64
     word_embedding_dim = 50
@@ -111,8 +112,9 @@ if __name__ == '__main__':
 
     noise = data.create_noise(batch_size, z_size, "uniform")
 
-    gen_model = Networks.GeneratorDCGAN_v1(z_size).to(device)
-    disc_model = Networks.DiscriminatorDCGAN_v1(n_filters).to(device)
+    if model == "DCGAN_v1":
+        gen_model = Networks.GeneratorDCGAN_v1(z_size).to(device)
+        disc_model = Networks.DiscriminatorDCGAN_v1(n_filters).to(device)
 
     loss_fn = nn.BCELoss()
 
