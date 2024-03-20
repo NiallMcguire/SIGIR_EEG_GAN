@@ -503,7 +503,7 @@ if __name__ == '__main__':
             'g_losses': g_losses,
         }, final_model_path)
 
-    elif model == "ACGAN":
+    elif model == "ACGAN_v1" or model == "ACGAN_v2":
         for epoch in range(1, num_epochs + 1):
             gen_model.train()
             fixed_z = data.create_noise(batch_size, z_size, mode_z).to(device)
