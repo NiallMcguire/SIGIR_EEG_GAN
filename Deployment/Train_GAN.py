@@ -4,6 +4,7 @@ import torch.nn as nn
 import numpy as np
 nltk.download('punkt')
 from gensim.models import Word2Vec
+from torch.autograd import grad as torch_grad
 sys.path.insert(0, '..')
 import pickle
 import torch
@@ -63,6 +64,65 @@ def g_train(x):
     g_output = gen_model(input_z)
     d_proba_fake = disc_model(g_output)
     g_loss = loss_fn(d_proba_fake, g_labels_real)
+
+    # gradient backprop & optimize ONLY G's parameters
+    g_loss.backward()
+    g_optimizer.step()
+
+    return g_loss.data.item()
+
+
+
+def gradient_penalty(real_data, generated_data, lambda_gp = 10.0):
+    batch_size = real_data.size(0)
+
+    # Calculate interpolation
+    alpha = torch.rand(real_data.shape[0], 1, 1, 1, requires_grad=True, device=device)
+    #print("Gen:", generated_data.shape)
+    interpolated = alpha * real_data + (1 - alpha) * generated_data
+
+    # Calculate probability of interpolated examples
+    proba_interpolated = disc_model(interpolated)
+
+    # Calculate gradients of probabilities with respect to examples
+    gradients = torch_grad(outputs=proba_interpolated, inputs=interpolated,
+                           grad_outputs=torch.ones(proba_interpolated.size(), device=device),
+                           create_graph=True, retain_graph=True)[0]
+
+    gradients = gradients.view(batch_size, -1)
+    gradients_norm = gradients.norm(2, dim=1)
+    return lambda_gp * ((gradients_norm - 1)**2).mean()
+
+def d_train_wgan(x):
+    disc_model.zero_grad()
+
+    batch_size = x.size(0)
+    x = x.to(device)
+
+    # Calculate probabilities on real and generated data
+    d_real = disc_model(x)
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
+    g_output = gen_model(input_z)
+
+    d_generated = disc_model(g_output)
+
+    d_loss = d_generated.mean() - d_real.mean() + gradient_penalty(x.data, g_output.data)
+
+    d_loss.backward()
+    d_optimizer.step()
+
+    return d_loss.data.item()
+
+def g_train_wgan(x):
+    gen_model.zero_grad()
+
+    batch_size = x.size(0)
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
+
+    g_output = gen_model(input_z)
+
+    d_generated = disc_model(g_output)
+    g_loss = -d_generated.mean()
 
     # gradient backprop & optimize ONLY G's parameters
     g_loss.backward()
@@ -142,42 +202,42 @@ if __name__ == '__main__':
     final_model_path = model_folder_path+'/model_final.pt'
 
 
+    if model == "DCGAN_v1" or model == "DCGAN_v2":
+        for epoch in range(1, num_epochs + 1):
+            gen_model.train()
+            d_losses, g_losses = [], []
+            for i, (x, _) in enumerate(trainloader):
+                d_loss, d_proba_real, d_proba_fake = d_train(x)
+                print("D Loss:", d_loss)
+                d_losses.append(d_loss)
+                g_losses.append(g_train(x))
 
-    for epoch in range(1, num_epochs + 1):
-        gen_model.train()
-        d_losses, g_losses = [], []
-        for i, (x, _) in enumerate(trainloader):
-            d_loss, d_proba_real, d_proba_fake = d_train(x)
-            print("D Loss:", d_loss)
-            d_losses.append(d_loss)
-            g_losses.append(g_train(x))
+            print(f'Epoch {epoch:03d} | D Loss >>'
+                  f' {torch.FloatTensor(d_losses).mean():.4f}')
+            print(f'Epoch {epoch:03d} | G Loss >>'
+                  f' {torch.FloatTensor(g_losses).mean():.4f}')
 
-        print(f'Epoch {epoch:03d} | D Loss >>'
-              f' {torch.FloatTensor(d_losses).mean():.4f}')
-        print(f'Epoch {epoch:03d} | G Loss >>'
-              f' {torch.FloatTensor(g_losses).mean():.4f}')
+            # Save checkpoints at regular intervals
+            if epoch % save_interval == 0:
+                torch.save({
+                    'epoch': epoch,
+                    'gen_model_state_dict': gen_model.state_dict(),
+                    'optimizer_state_dict': g_optimizer.state_dict(),
+                    'd_losses': d_losses,
+                    'g_losses': g_losses,
+                }, checkpoint_path.format(epoch))
 
-        # Save checkpoints at regular intervals
-        if epoch % save_interval == 0:
-            torch.save({
-                'epoch': epoch,
-                'gen_model_state_dict': gen_model.state_dict(),
-                'optimizer_state_dict': g_optimizer.state_dict(),
-                'd_losses': d_losses,
-                'g_losses': g_losses,
-            }, checkpoint_path.format(epoch))
+            '''
+            gen_model.eval()
+            epoch_samples_wgan.append(
+                create_samples(gen_model, fixed_z, t).detach().cpu().numpy())
+            '''
 
-        '''
-        gen_model.eval()
-        epoch_samples_wgan.append(
-            create_samples(gen_model, fixed_z, t).detach().cpu().numpy())
-        '''
-
-    # Save the final model after training is complete
-    torch.save({
-        'epoch': num_epochs,
-        'gen_model_state_dict': gen_model.state_dict(),
-        'optimizer_state_dict': g_optimizer.state_dict(),
-        'd_losses': d_losses,
-        'g_losses': g_losses,
-    }, final_model_path)
+        # Save the final model after training is complete
+        torch.save({
+            'epoch': num_epochs,
+            'gen_model_state_dict': gen_model.state_dict(),
+            'optimizer_state_dict': g_optimizer.state_dict(),
+            'd_losses': d_losses,
+            'g_losses': g_losses,
+        }, final_model_path)
