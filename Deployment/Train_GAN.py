@@ -22,7 +22,6 @@ def d_train(x):
     :param x: The real EEG data
     :return: The discriminator loss, the probability of the real data, and the probability of the fake data
     """
-
     disc_model.zero_grad()
 
     # Train discriminator with a real batch
@@ -165,9 +164,10 @@ if __name__ == '__main__':
         EEG_word_level_embeddings = pickle.load(file)
         EEG_word_level_labels = pickle.load(file)
 
-    if model == "DCGAN_v1" or model == "DCGAN_v2":
+    if model == "DCGAN_v1" or model == "DCGAN_v2" or model == "WGAN_v1" or model == "WGAN_v2":
         Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
+
 
 
     mode_z = 'uniform'
@@ -181,6 +181,9 @@ if __name__ == '__main__':
     elif model == "DCGAN_v2":
         gen_model = Networks.GeneratorDCGAN_v2(z_size).to(device)
         disc_model = Networks.DiscriminatorDCGAN_v2(n_filters).to(device)
+    elif model == "WGAN_v1":
+        gen_model = Networks.GeneratorWGAN_v1(z_size).to(device)
+        disc_model = Networks.DiscriminatorWGAN_v1(n_filters).to(device)
 
     loss_fn = nn.BCELoss()
 
@@ -241,3 +244,4 @@ if __name__ == '__main__':
             'd_losses': d_losses,
             'g_losses': g_losses,
         }, final_model_path)
+
