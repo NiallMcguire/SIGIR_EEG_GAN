@@ -2,6 +2,8 @@ import sys
 import nltk
 import torch.nn as nn
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
+
 nltk.download('punkt')
 from torch.autograd import grad as torch_grad
 sys.path.insert(0, '..')
@@ -225,6 +227,85 @@ def d_train_wgan_text(x, input_t):
 
 
 
+## Train the discriminator
+def d_train_ACGAN(x, T):
+
+    #init gradient
+    disc_model.zero_grad()
+
+    # Train discriminator with a real batch
+    batch_size = x.size(0)
+    x = x.to(device)
+    d_proba_real, real_aux = disc_model(x)
+
+    #Calculate loss (real images)
+    d_labels_real = torch.ones(batch_size, 1, device=device)
+    #d_loss_real = adversarial_loss(d_proba_real, d_labels_real)
+
+    real_aux = real_aux.squeeze(dim=1)
+    d_real_loss = (adversarial_loss(d_proba_real, d_labels_real) + auxiliary_loss(real_aux, T)) / 2
+
+    #building Z
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
+
+    #building fake T
+    gen_labels = torch.randint(0, n_classes, (batch_size,))
+
+    # Train discriminator on a fake batch
+    g_output = gen_model(input_z, gen_labels)
+
+    #Discriminating fake images
+    d_proba_fake, fake_aux = disc_model(g_output)
+
+    #Calculate loss (fake images)
+    d_labels_fake = torch.zeros(batch_size, 1, device=device)
+
+    gen_labels = gen_labels.type(torch.float32).to(device)
+    fake_aux = fake_aux.squeeze(dim=1)
+
+    d_fake_loss = (adversarial_loss(d_proba_fake, d_labels_fake) + auxiliary_loss(fake_aux, gen_labels)) / 2
+
+    # gradient backprop & optimize ONLY D's parameters
+    d_loss = (d_real_loss + d_fake_loss) / 2
+    d_loss.backward()
+    d_optimizer.step()
+
+    return d_loss.data.item(), d_proba_real.detach(), d_proba_fake.detach()
+
+## Train the generator
+def g_train_ACGAN(x):
+
+    #Init gradient
+    gen_model.zero_grad()
+
+    #Building Z
+    batch_size = x.size(0)
+    input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
+
+    #building real labels
+    g_labels_real = torch.ones((batch_size, 1), device=device)
+
+    #generate fake text embeddings
+    gen_labels = torch.randint(0, n_classes, (batch_size,))
+
+    g_output = gen_model(input_z, gen_labels)
+
+    #in this case, d_proba_fake is their validity
+    d_proba_fake, pred_label = disc_model(g_output)
+
+    pred_label = pred_label.squeeze(dim=1)
+
+    gen_labels = gen_labels.type(torch.float32).to(device)
+    g_loss = 0.5 * (adversarial_loss(d_proba_fake, g_labels_real) + auxiliary_loss(pred_label, gen_labels))
+
+    # gradient backprop & optimize ONLY G's parameters
+    g_loss.backward()
+    g_optimizer.step()
+
+    return g_loss.data.item()
+
+
+
 if __name__ == '__main__':
     print(torch.__version__)
     print("GPU Available:", torch.cuda.is_available())
@@ -251,6 +332,7 @@ if __name__ == '__main__':
     z_size = 100
     #image_size = (105, 8)
     n_filters = 32
+    n_classes = 5860
 
     # Create the data object
     data = Data.Data()
@@ -270,6 +352,11 @@ if __name__ == '__main__':
     elif Generation_Size == "Sentence_Level":
         EEG_sentence_list, list_of_sentences = data.create_word_label_embeddings_sentence(EEG_word_level_embeddings, EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
         trainloader = data.create_dataloader_sentence(EEG_sentence_list, list_of_sentences)
+    elif model == "ACGAN":
+        encoder = LabelEncoder()
+        Embedded_Word_labels = encoder.fit_transform(np.array(EEG_word_level_labels).reshape(-1, 1))
+        Embedded_Word_labels = torch.tensor(Embedded_Word_labels, dtype=torch.float)
+        trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
 
     mode_z = 'uniform'
     fixed_z = data.create_noise(batch_size, z_size, mode_z).to(device)
@@ -322,6 +409,8 @@ if __name__ == '__main__':
 
 
     loss_fn = nn.BCELoss()
+    auxiliary_loss = nn.CrossEntropyLoss()
+    adversarial_loss = nn.BCELoss()
 
     g_optimizer = torch.optim.Adam(gen_model.parameters(), 0.00002)
     d_optimizer = torch.optim.Adam(disc_model.parameters(), 0.00002)
@@ -414,4 +503,29 @@ if __name__ == '__main__':
             'd_losses': d_losses,
             'g_losses': g_losses,
         }, final_model_path)
+
+    elif model == "ACGAN":
+        for epoch in range(1, num_epochs + 1):
+            gen_model.train()
+            fixed_z = data.create_noise(batch_size, z_size, mode_z).to(device)
+            d_losses, g_losses = [], []
+            for i, (x, t) in enumerate(trainloader):
+                g_losses.append(g_train_ACGAN(x))
+                d_loss, d_proba_real, d_proba_fake = d_train_ACGAN(x, t)
+                print("D Loss:", d_loss)
+                d_losses.append(d_loss)
+
+            print(f'Epoch {epoch:03d} | D Loss >>'
+                  f' {torch.FloatTensor(d_losses).mean():.4f}')
+            print(f'Epoch {epoch:03d} | G Loss >>'
+                  f' {torch.FloatTensor(g_losses).mean():.4f}')
+
+            if epoch % save_interval == 0:
+                torch.save({
+                    'epoch': epoch,
+                    'gen_model_state_dict': gen_model.state_dict(),
+                    'optimizer_state_dict': g_optimizer.state_dict(),
+                    'd_losses': d_losses,
+                    'g_losses': g_losses,
+                }, checkpoint_path.format(epoch))
 
