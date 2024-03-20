@@ -10,6 +10,7 @@ import torch
 import argparse
 import Networks
 import Data
+import os
 
 
 
@@ -127,8 +128,16 @@ if __name__ == '__main__':
     torch.manual_seed(1)
     critic_iterations = 5
     save_interval = 5
-    checkpoint_path = '/users/gxb18167/Datasets/Checkpoints/DCGAN_1.0/checkpoint_epoch_{}.pt'
-    final_model_path = '/users/gxb18167/Datasets/Checkpoints/DCGAN_1.0/model_final.pt'
+
+
+    model_folder_path = f'/users/gxb18167/Datasets/Checkpoints/{model}'
+    if not os.path.exists(model_folder_path):
+        os.makedirs(model_folder_path)
+
+    checkpoint_path = model_folder_path+'/checkpoint_epoch_{}.pt'
+    final_model_path = model_folder_path+'/model_final.pt'
+
+
 
     for epoch in range(1, num_epochs + 1):
         gen_model.train()
@@ -159,6 +168,7 @@ if __name__ == '__main__':
         epoch_samples_wgan.append(
             create_samples(gen_model, fixed_z, t).detach().cpu().numpy())
         '''
+
     # Save the final model after training is complete
     torch.save({
         'epoch': num_epochs,
