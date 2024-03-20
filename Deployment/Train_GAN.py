@@ -140,7 +140,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model', type=str, help='Select model by prefix: DCGAN_v1, ')
+    parser.add_argument('--model', type=str, help='Select model by prefix: DCGAN_v1, DCGAN_v2, WGAN_v1, WGAN_v2')
 
     args = parser.parse_args()
     model = args.model
@@ -166,8 +166,6 @@ if __name__ == '__main__':
     if model == "DCGAN_v1" or model == "DCGAN_v2" or model == "WGAN_v1" or model == "WGAN_v2":
         Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
-
-
 
     mode_z = 'uniform'
     fixed_z = data.create_noise(batch_size, z_size, mode_z).to(device)
@@ -195,13 +193,14 @@ if __name__ == '__main__':
     critic_iterations = 5
     save_interval = 5
 
+    model_parameters = f"device_{device}_batch_size_{batch_size}_word_embedding_dim_{word_embedding_dim}_z_size_{z_size}_num_epochs_{num_epochs}_"
 
     model_folder_path = f'/users/gxb18167/Datasets/Checkpoints/{model}'
     if not os.path.exists(model_folder_path):
         os.makedirs(model_folder_path)
 
-    checkpoint_path = model_folder_path+'/checkpoint_epoch_{}.pt'
-    final_model_path = model_folder_path+'/model_final.pt'
+    checkpoint_path = model_folder_path+'/'+model_parameters+'checkpoint_epoch_{}.pt'
+    final_model_path = model_folder_path+'/'+model_parameters+'model_final.pt'
 
 
     if model == "DCGAN_v1" or model == "DCGAN_v2":
@@ -228,12 +227,6 @@ if __name__ == '__main__':
                     'd_losses': d_losses,
                     'g_losses': g_losses,
                 }, checkpoint_path.format(epoch))
-
-            '''
-            gen_model.eval()
-            epoch_samples_wgan.append(
-                create_samples(gen_model, fixed_z, t).detach().cpu().numpy())
-            '''
 
         # Save the final model after training is complete
         torch.save({
