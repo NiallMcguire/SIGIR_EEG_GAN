@@ -287,6 +287,10 @@ if __name__ == '__main__':
     elif model == "WGAN_v2":
         gen_model = Networks.GeneratorWGAN_v2(z_size).to(device)
         disc_model = Networks.DiscriminatorWGAN_v2(n_filters).to(device)
+    elif model == "ACGAN":
+        gen_model = Networks.GeneratorACGAN(z_size).to(device)
+        disc_model = Networks.DiscriminatorACGAN(n_filters).to(device)
+
     elif model == "DCGAN_v1_Text":
         if Generation_Size == "Sentence_Level":
             gen_model = Networks.GeneratorDCGAN_v1_Sentence(z_size, word_embedding_dim).to(device)
@@ -327,7 +331,7 @@ if __name__ == '__main__':
     critic_iterations = 5
     save_interval = 5
 
-    model_parameters = f"device_{device}_batch_size_{batch_size}_word_embedding_dim_{word_embedding_dim}_z_size_{z_size}_num_epochs_{num_epochs}_"
+    model_parameters = f"Generation_size_{Generation_Size}_batch_size_{batch_size}_word_embedding_dim_{word_embedding_dim}_z_size_{z_size}_num_epochs_{num_epochs}_device_{device}_"
 
     model_folder_path = f'/users/gxb18167/Datasets/Checkpoints/{model}'
     if not os.path.exists(model_folder_path):

@@ -1003,3 +1003,82 @@ class DiscriminatorWGAN_v2_Sentence(nn.Module):
 
         output = self.network(combined_input)
         return output
+
+
+
+class GeneratorACGAN(nn.Module):
+    def __init__(self, noise_dim, n_classes=5860):
+        super(GeneratorACGAN, self).__init__()
+
+        self.noise_dim = noise_dim
+        self.label_emb = nn.Embedding(n_classes, 100)
+
+        # Define the layers of your generator
+        self.fc_noise = nn.Linear(noise_dim, 105 * 8)
+        self.fc_word_embedding = nn.Linear(100, 105 * 8)
+        self.conv1 = nn.Conv2d(2, 64, kernel_size=3, stride=1, padding=1)
+        self.bn1 = nn.BatchNorm2d(64)
+        self.relu = nn.ReLU()
+        self.conv2 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
+
+    def forward(self, noise, word_embedding):
+        # Process noise
+        noise = self.fc_noise(noise)
+        noise = noise.view(noise.size(0), 1, 105, 8)
+
+        # Process word embedding
+        word_embedding = self.label_emb(word_embedding)
+        word_embedding = self.fc_word_embedding(word_embedding)
+        word_embedding = word_embedding.view(word_embedding.size(0), 1, 105, 8)
+
+        # Concatenate noise and word embedding
+        combined_input = torch.cat([noise, word_embedding], dim=1)
+
+        # Upsample and generate the output
+        z = self.conv1(combined_input)
+        z = self.bn1(z)
+        z = self.relu(z)
+        z = self.conv2(z)
+
+        return z
+
+class DiscriminatorACGAN(nn.Module):
+    def __init__(self, n_filters):
+        super(DiscriminatorACGAN, self).__init__()
+
+        self.network = nn.Sequential(
+            nn.Conv2d(1, n_filters, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.LeakyReLU(0.2),
+
+            nn.Conv2d(n_filters, n_filters*2, kernel_size=4, stride=2, padding=1, bias=False),
+            nn.InstanceNorm2d(n_filters * 2),
+            nn.LeakyReLU(0.2),
+
+            nn.Conv2d(n_filters*2, n_filters*4, kernel_size=3, stride=2, padding=1, bias=False),
+            nn.InstanceNorm2d(n_filters*4),
+            nn.LeakyReLU(0.2),
+
+            nn.Flatten(),  # Flatten spatial dimensions
+
+            # Fully connected layer to reduce to a single value per sample
+
+        )
+
+        self.adv_layer = nn.Sequential(
+            nn.Linear(n_filters*4 * (105 // 8) * (8 // 8), 1),
+            nn.Sigmoid()
+        )
+        self.aux_layer = nn.Sequential(
+            nn.Linear(n_filters*4 * (105 // 8) * (8 // 8), 1),
+            nn.Softmax()
+        )
+
+    def forward(self, input):
+        #print("combined_input:", combined_input.shape)
+
+        output = self.network(input)
+        valid = self.adv_layer(output)
+        label = self.aux_layer(output)
+
+
+        return valid, label
