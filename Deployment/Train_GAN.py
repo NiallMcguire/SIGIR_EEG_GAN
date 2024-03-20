@@ -236,10 +236,12 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--model', type=str, help='Select model by prefix: DCGAN_v1, DCGAN_v2, WGAN_v1, WGAN_v2')
+    parser.add_argument('--model', type=str, help='Select model by prefix: DCGAN_v1, DCGAN_v2, WGAN_v1, WGAN_v2, DCGAN_v1_Text, DCGAN_v2_Text, WGAN_v1_Text, WGAN_v2_Text')
+    parser.add_argument('--Generation_Size', type=str, help='Word_Level, Contextual, Sentence_Level')
 
     args = parser.parse_args()
     model = args.model
+    Generation_Size = args.Generation_Size
 
     batch_size = 64
     word_embedding_dim = 50
@@ -259,12 +261,15 @@ if __name__ == '__main__':
         EEG_word_level_embeddings = pickle.load(file)
         EEG_word_level_labels = pickle.load(file)
 
-    Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
-    trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
+    if Generation_Size == "Word_Level":
+        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
+        trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
+    elif Generation_Size == "Contextual":
+        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings_contextual(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
+        trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
 
     mode_z = 'uniform'
     fixed_z = data.create_noise(batch_size, z_size, mode_z).to(device)
-
     noise = data.create_noise(batch_size, z_size, "uniform")
 
     if model == "DCGAN_v1":
