@@ -364,10 +364,16 @@ if __name__ == '__main__':
     data = Data.Data()
 
     # To load the lists from the file:
-    with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs.pkl",
-              'rb') as file:
-        EEG_word_level_embeddings = pickle.load(file)
-        EEG_word_level_labels = pickle.load(file)
+    if Generation_Size == "Word_Level":
+        with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs.pkl",
+                  'rb') as file:
+            EEG_word_level_embeddings = pickle.load(file)
+            EEG_word_level_labels = pickle.load(file)
+    else:
+        with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs_Sentence.pkl",
+                  'rb') as file:
+            EEG_word_level_embeddings = pickle.load(file)
+            EEG_word_level_labels = pickle.load(file)
 
     if Generation_Size == "Word_Level":
         Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)

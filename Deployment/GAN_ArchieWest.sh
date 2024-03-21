@@ -19,7 +19,7 @@
 # Specify (hard) runtime (HH:MM:SS)
 #SBATCH --time=05:00:00
 #SBATCH --mail-user=niall.mcguire@strath.ac.uk
-#SBATCH --mail-type=ALL
+#SBATCH --mail-type=END
 # Job name
 #SBATCH --job-name=gpu_test
 #
