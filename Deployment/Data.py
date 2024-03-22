@@ -13,7 +13,7 @@ class Data:
     def __init__(self):
         pass
 
-    def create_word_label_embeddings(self, Word_Labels_List, word_embedding_dim=100):
+    def create_word_label_embeddings(self, Word_Labels_List, word_embedding_dim=50):
         """
         This function takes in the list of words associated with EEG segments and returns the word embeddings for each word
 
@@ -34,11 +34,11 @@ class Data:
 
         return Embedded_Word_labels, word_embeddings
 
-    def create_word_label_embeddings_contextual(self, Word_Labels_List):
+    def create_word_label_embeddings_contextual(self, Word_Labels_List, word_embedding_dim=50):
         tokenized_words = []
         for i in range(len(Word_Labels_List)):
             tokenized_words.append([Word_Labels_List[i]])
-        model = Word2Vec(sentences=tokenized_words, vector_size=50, window=5, min_count=1, workers=4)
+        model = Word2Vec(sentences=tokenized_words, vector_size=word_embedding_dim, window=5, min_count=1, workers=4)
         word_embeddings = {word: model.wv[word] for word in model.wv.index_to_key}
         Embedded_Word_labels = []
 
@@ -63,7 +63,7 @@ class Data:
 
         return Embedded_Word_labels, word_embeddings
 
-    def create_word_label_embeddings_sentence(self, Word_Labels_List, EEG_word_level_embeddings, word_embedding_dim=100):
+    def create_word_label_embeddings_sentence(self, Word_Labels_List, EEG_word_level_embeddings, word_embedding_dim=50):
 
         tokenized_words = []
         for i in range(len(Word_Labels_List)):

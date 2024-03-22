@@ -350,10 +350,8 @@ if __name__ == '__main__':
 
     batch_size = 64
 
-    if Generation_Size == "Word_Level":
-        word_embedding_dim = 50
-    elif Generation_Size == "Contextual":
-        word_embedding_dim = 150
+    word_embedding_dim = 50
+
 
     #output_shape = (1, 105, 8)
     torch.manual_seed(1)
@@ -381,13 +379,13 @@ if __name__ == '__main__':
             EEG_word_level_labels = pickle.load(file)
 
     if Generation_Size == "Word_Level":
-        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels)
+        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
     elif Generation_Size == "Contextual":
-        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings_contextual(EEG_word_level_labels)
+        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings_contextual(EEG_word_level_labels, word_embedding_dim)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
     elif Generation_Size == "Sentence_Level":
-        EEG_sentence_list, list_of_sentences = data.create_word_label_embeddings_sentence(EEG_word_level_embeddings, EEG_word_level_labels)
+        EEG_sentence_list, list_of_sentences = data.create_word_label_embeddings_sentence(EEG_word_level_embeddings, EEG_word_level_labels, word_embedding_dim)
         trainloader = data.create_dataloader_sentence(EEG_sentence_list, list_of_sentences)
     elif model == "ACGAN_v1" or model == "ACGAN_v2":
         encoder = LabelEncoder()
@@ -395,10 +393,14 @@ if __name__ == '__main__':
         Embedded_Word_labels = torch.tensor(Embedded_Word_labels, dtype=torch.float)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
 
+    if Generation_Size == "Contextual":
+        word_embedding_dim = 150
+    elif Generation_Size == "Sentence_Level":
+        word_embedding_dim = 2850
+
     mode_z = 'uniform'
     fixed_z = data.create_noise(batch_size, z_size, mode_z).to(device)
     noise = data.create_noise(batch_size, z_size, "uniform")
-
 
     i1, l1 = next(iter(trainloader))
     print(i1.shape, l1.shape)
