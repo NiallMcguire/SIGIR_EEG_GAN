@@ -349,7 +349,11 @@ if __name__ == '__main__':
     Generation_Size = args.Generation_Size
 
     batch_size = 64
-    word_embedding_dim = 50
+
+    if Generation_Size == "Word_Level":
+        word_embedding_dim = 50
+    elif Generation_Size == "Contextual":
+        word_embedding_dim = 150
     #output_shape = (1, 105, 8)
     torch.manual_seed(1)
     np.random.seed(1)
