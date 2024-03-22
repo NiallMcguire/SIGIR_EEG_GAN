@@ -354,6 +354,7 @@ if __name__ == '__main__':
         word_embedding_dim = 50
     elif Generation_Size == "Contextual":
         word_embedding_dim = 150
+
     #output_shape = (1, 105, 8)
     torch.manual_seed(1)
     np.random.seed(1)
@@ -397,6 +398,10 @@ if __name__ == '__main__':
     mode_z = 'uniform'
     fixed_z = data.create_noise(batch_size, z_size, mode_z).to(device)
     noise = data.create_noise(batch_size, z_size, "uniform")
+
+
+    i1, l1 = next(iter(trainloader))
+    print(i1.shape, l1.shape)
 
     if model == "DCGAN_v1":
         gen_model = Networks.GeneratorDCGAN_v1(z_size).to(device)
