@@ -381,13 +381,13 @@ if __name__ == '__main__':
             EEG_word_level_labels = pickle.load(file)
 
     if Generation_Size == "Word_Level":
-        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
+        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
     elif Generation_Size == "Contextual":
-        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings_contextual(EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
+        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings_contextual(EEG_word_level_labels)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
     elif Generation_Size == "Sentence_Level":
-        EEG_sentence_list, list_of_sentences = data.create_word_label_embeddings_sentence(EEG_word_level_embeddings, EEG_word_level_labels, word_embedding_dim=word_embedding_dim)
+        EEG_sentence_list, list_of_sentences = data.create_word_label_embeddings_sentence(EEG_word_level_embeddings, EEG_word_level_labels)
         trainloader = data.create_dataloader_sentence(EEG_sentence_list, list_of_sentences)
     elif model == "ACGAN_v1" or model == "ACGAN_v2":
         encoder = LabelEncoder()
