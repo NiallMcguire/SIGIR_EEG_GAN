@@ -392,6 +392,9 @@ if __name__ == '__main__':
         Embedded_Word_labels = encoder.fit_transform(np.array(EEG_word_level_labels).reshape(-1, 1))
         Embedded_Word_labels = torch.tensor(Embedded_Word_labels, dtype=torch.float)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
+    elif Generation_Size == "BERT":
+        Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings_BERT(EEG_word_level_labels, word_embedding_dim)
+        trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
 
     if Generation_Size == "Contextual":
         word_embedding_dim = 150
