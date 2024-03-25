@@ -1,3 +1,4 @@
+import pickle
 import sys
 import nltk
 import torch.nn as nn
@@ -33,6 +34,25 @@ class Data:
             Embedded_Word_labels.append(word_embeddings[word])
 
         return Embedded_Word_labels, word_embeddings
+
+
+    def create_word_label_embeddings_bert(self, Word_Labels_List, word_embedding_dim=50):
+        """
+        This function takes in the list of words associated with EEG segments and returns the word embeddings for each word
+
+        :param Word_Labels_List: List of the textual data associated with EEG segments
+        :return Embedded_Word_labels: List of each words embeddings
+        :return word_embeddings: Dictionary of word embeddings
+        """
+        with open("/users/gxb18167/Datasets/ZuCo/EEG_BERT_Embeddings.pkl", 'wb') as file:
+            word_to_embedding = pickle.load(file)
+
+
+        Embedded_Word_labels = []
+        for word in Word_Labels_List:
+            Embedded_Word_labels.append(word_to_embedding[word])
+
+        return Embedded_Word_labels, word_to_embedding
 
     def create_word_label_embeddings_contextual(self, Word_Labels_List, word_embedding_dim=50):
         tokenized_words = []
