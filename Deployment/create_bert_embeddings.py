@@ -4,8 +4,6 @@ import torch
 
 
 
-
-
 if __name__ == '__main__':
     # To load the lists from the file:
     with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs.pkl",
