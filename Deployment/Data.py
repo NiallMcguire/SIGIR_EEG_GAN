@@ -44,7 +44,7 @@ class Data:
         :return Embedded_Word_labels: List of each words embeddings
         :return word_embeddings: Dictionary of word embeddings
         """
-        with open("/users/gxb18167/Datasets/ZuCo/EEG_BERT_Embeddings.pkl", 'wb') as file:
+        with open("/users/gxb18167/Datasets/ZuCo/EEG_BERT_Embeddings.pkl", 'rb') as file:
             word_to_embedding = pickle.load(file)
 
 
