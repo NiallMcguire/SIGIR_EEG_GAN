@@ -5,6 +5,8 @@ import torch
 
 
 if __name__ == '__main__':
+
+    '''
     # To load the lists from the file:
     with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs.pkl",
               'rb') as file:
@@ -78,6 +80,14 @@ if __name__ == '__main__':
     # Save the embeddings to a file
     with open("/users/gxb18167/Datasets/ZuCo/EEG_BERT_Embeddings.pkl", 'wb') as file:
         pickle.dump(word_to_embedding, file)
+    '''
+
+    with open("/users/gxb18167/Datasets/ZuCo/EEG_BERT_Embeddings.pkl",
+              'rb') as file:
+        word_to_embedding = pickle.load(file)
+
+    print("Len of bert embeddings", len(word_to_embedding))
+
 
 
 
