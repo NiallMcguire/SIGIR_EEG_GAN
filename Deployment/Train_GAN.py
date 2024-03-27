@@ -400,6 +400,8 @@ if __name__ == '__main__':
         word_embedding_dim = 150
     elif Generation_Size == "Sentence_Level":
         word_embedding_dim = 2850
+    elif Generation_Size == "BERT":
+        word_embedding_dim = 768
 
     mode_z = 'uniform'
     fixed_z = data.create_noise(batch_size, z_size, mode_z).to(device)
@@ -530,8 +532,6 @@ if __name__ == '__main__':
                         d_loss = d_train_wgan(x)
                         d_losses.append(d_loss)
                     else:
-                        print("X shape", x.shape)
-                        print("T shape", t.shape)
                         d_loss = d_train_wgan_text(x, t)
                         d_losses.append(d_loss)
                 if model == "WGAN_v1" or model == "WGAN_v2":
