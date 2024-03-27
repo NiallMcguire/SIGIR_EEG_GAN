@@ -520,7 +520,7 @@ if __name__ == '__main__':
         }, final_model_path)
 
 
-    elif model == "WGAN_v1" or model == "WGAN_v2" or model == "WGAN_v1_Text" or model == "WGAN_v2_Text":
+    elif model == "WGAN_v1" or model == "WGAN_v2" or model == "WGAN_v1_Text" or model == "WGAN_v2_Text" or model == "BERT":
         for epoch in range(1, num_epochs + 1):
             gen_model.train()
             d_losses, g_losses = [], []
