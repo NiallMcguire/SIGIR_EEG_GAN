@@ -11,6 +11,9 @@ if __name__ == '__main__':
         EEG_word_level_embeddings = pickle.load(file)
         EEG_word_level_labels = pickle.load(file)
 
+
+    print("Labels len:", len(EEG_word_level_labels))
+
     word_corpus = EEG_word_level_labels
 
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -29,6 +32,8 @@ if __name__ == '__main__':
     # Split the word corpus into chunks
     chunk_size = 100  # You can adjust this based on your need
     word_chunks = [word_corpus[i:i + chunk_size] for i in range(0, len(word_corpus), chunk_size)]
+
+    print("Word Corpus len:", len(word_corpus))
 
     # Initialize a list to store embeddings
     all_embeddings = []
@@ -52,6 +57,8 @@ if __name__ == '__main__':
 
     # Concatenate embeddings from all chunks along dimension 0
     final_embeddings = torch.cat(all_embeddings, dim=0)
+
+    print("Final embeddings len:", len(final_embeddings))
 
     # Create a dictionary to map words to their embeddings
     word_to_embedding = {}
