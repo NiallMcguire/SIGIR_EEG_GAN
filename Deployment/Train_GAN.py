@@ -530,6 +530,8 @@ if __name__ == '__main__':
                         d_loss = d_train_wgan(x)
                         d_losses.append(d_loss)
                     else:
+                        print("X shape", x.shape)
+                        print("T shape", t.shape)
                         d_loss = d_train_wgan_text(x, t)
                         d_losses.append(d_loss)
                 if model == "WGAN_v1" or model == "WGAN_v2":
