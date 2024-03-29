@@ -367,12 +367,12 @@ if __name__ == '__main__':
     data = Data.Data()
 
     # To load the lists from the file:
-    if Generation_Size == "Word_Level" or "BERT":
+    if Generation_Size == "Word_Level" or Generation_Size == "BERT":
         with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs.pkl",
                   'rb') as file:
             EEG_word_level_embeddings = pickle.load(file)
             EEG_word_level_labels = pickle.load(file)
-    else:
+    elif Generation_Size == "Contextual" or "Sentence_Level":
         with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs_Sentence.pkl",
                   'rb') as file:
             EEG_word_level_embeddings = pickle.load(file)
