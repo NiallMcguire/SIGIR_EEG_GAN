@@ -84,7 +84,7 @@ def d_train_text(x, T):
     input_z = data.create_noise(batch_size, z_size, mode_z).to(device)
     g_output = gen_model(input_z, T)
 
-    d_proba_fake = disc_model(g_output)
+    d_proba_fake = disc_model(g_output, T)
     d_labels_fake = torch.zeros(batch_size, 1, device=device)
     d_loss_fake = loss_fn(d_proba_fake, d_labels_fake)
 
