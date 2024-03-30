@@ -77,7 +77,7 @@ def d_train_text(x, T):
     x = x.to(device)
     d_labels_real = torch.ones(batch_size, 1, device=device)
 
-    d_proba_real = disc_model(x)
+    d_proba_real = disc_model(x, T)
     d_loss_real = loss_fn(d_proba_real, d_labels_real)
 
     # Train discriminator on a fake batch
