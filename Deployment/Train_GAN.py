@@ -103,7 +103,7 @@ def g_train_text(x, T):
     g_labels_real = torch.ones((batch_size, 1), device=device)
 
     g_output = gen_model(input_z, T)
-    d_proba_fake = disc_model(g_output)
+    d_proba_fake = disc_model(g_output, T)
     g_loss = loss_fn(d_proba_fake, g_labels_real)
 
     # gradient backprop & optimize ONLY G's parameters
