@@ -42,7 +42,7 @@ module load anaconda/python-3.9.7/2021.11
 
 #Modify the line below to run your program. This is an example
 #=========================================================
-python /users/gxb18167/SIGIR_EEG_GAN/Deployment/JS-Distance.py --model WGAN_v1_Text --type random --generator_path Generation_size_Word_Level_batch_size_64_g_d_learning_rate2e-05_2e-05_word_embedding_dim_50_z_size_100_num_epochs_100_device_cuda:0_model_final.pt
+python /users/gxb18167/SIGIR_EEG_GAN/Deployment/JS-Distance.py --model WGAN_v1_Text --type normal --generator_path Generation_size_Word_Level_batch_size_64_g_d_learning_rate2e-05_2e-05_word_embedding_dim_50_z_size_100_num_epochs_100_device_cuda:0_model_final.pt
 
 
 # Do not change the line below
