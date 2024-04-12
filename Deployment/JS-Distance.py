@@ -172,6 +172,11 @@ if __name__ == '__main__':
             fr"/users/gxb18167/Datasets/Checkpoints/{model}/{generator_path}",
             map_location=device)
 
+        gen_model.load_state_dict(checkpoint['gen_model_state_dict'])
+        gen_model.to(device)
+        # Set the model to evaluation mode
+        gen_model.eval()
+
 
 
 
