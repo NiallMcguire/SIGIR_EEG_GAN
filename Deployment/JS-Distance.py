@@ -5,7 +5,7 @@ import numpy as np
 from scipy.spatial import distance
 import nltk
 
-from Deployment import Networks
+import Networks
 
 nltk.download('punkt')
 from gensim.models import Word2Vec
