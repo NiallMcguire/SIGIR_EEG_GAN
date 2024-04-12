@@ -215,6 +215,8 @@ if __name__ == '__main__':
         # Set the model to evaluation mode
         gen_model.eval()
 
+        print(gen_model)
+
         for word, segment in probability_distribution_dict.items():
             word_embedding = word_embeddings[word]
 
@@ -225,6 +227,8 @@ if __name__ == '__main__':
 
             g_output = generate_samples(model, gen_model, input_z, word_embedding_tensor)
             g_output = g_output.to('cpu')
+
+            print(g_output.shape)
 
             EEG_synthetic_denormalized = (g_output * np.max(np.abs(EEG_word_level_embeddings))) + np.mean(
                 EEG_word_level_embeddings)
