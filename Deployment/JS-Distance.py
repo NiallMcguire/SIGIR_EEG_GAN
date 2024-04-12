@@ -228,13 +228,15 @@ if __name__ == '__main__':
             g_output = generate_samples(model, gen_model, input_z, word_embedding_tensor)
             g_output = g_output.to('cpu')
 
-            print(g_output.shape)
 
             EEG_synthetic_denormalized = (g_output * np.max(np.abs(EEG_word_level_embeddings))) + np.mean(
                 EEG_word_level_embeddings)
 
             synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float).to(device)
             synthetic_sample = synthetic_sample.resize(840).to(device)
+
+            print(synthetic_sample.shape)
+            print(synthetic_sample)
 
             synthetic_sample = convert_to_probability_distribution(synthetic_sample)
 
