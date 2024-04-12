@@ -93,12 +93,15 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str,
                         help='Select model by prefix: DCGAN_v1, DCGAN_v2, WGAN_v1, WGAN_v2, ACGAN_v1, ACGAN_v2, DCGAN_v1_Text, DCGAN_v2_Text, WGAN_v1_Text, WGAN_v2_Text')
     parser.add_argument('--type', type=str, help='normal, random')
+    parser.add_argument('--generator_path', type=str, help='Path to generator checkpoint')
 
     args = parser.parse_args()
     model = args.model
     generation_type = args.type
+    generator_path = args.generator_path
 
     z_size = 100
+    word_embedding_dim = 50
 
     data = Data.Data()
 
@@ -108,7 +111,7 @@ if __name__ == '__main__':
         EEG_word_level_embeddings = pickle.load(file)
         EEG_word_level_labels = pickle.load(file)
 
-    Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, 50)
+    Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim)
 
     # create dictionary with words a labels and the EEG embeddings in a list as the values
     EEG_word_level_dict = {}
@@ -143,6 +146,14 @@ if __name__ == '__main__':
         gen_model = Networks.GeneratorWGAN_v1(z_size).to(device)
     elif model == "WGAN_v2":
         gen_model = Networks.GeneratorWGAN_v2(z_size).to(device)
+    elif model == "DCGAN_v1_Text":
+        gen_model = Networks.GeneratorDCGAN_v1_Text(z_size, word_embedding_dim).to(device)
+    elif model == "DCGAN_v2_Text":
+        gen_model = Networks.GeneratorDCGAN_v2_Text(z_size, word_embedding_dim).to(device)
+    elif model == "WGAN_v1_Text":
+        gen_model = Networks.GeneratorWGAN_v1_Text(z_size, word_embedding_dim).to(device)
+    elif model == "WGAN_v2_Text":
+        gen_model = Networks.GeneratorWGAN_v2_Text(z_size, word_embedding_dim).to(device)
 
     random_distance_dict = {}
 
@@ -157,6 +168,9 @@ if __name__ == '__main__':
             js_distance = compute_js_distance(segment, random_value)
             random_distance_dict[word] = js_distance
     elif generation_type == 'normal':
+        checkpoint = torch.load(
+            fr"/users/gxb18167/Datasets/Checkpoints/{model}/{generator_path}",
+            map_location=device)
 
 
 
