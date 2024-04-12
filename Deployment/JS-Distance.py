@@ -238,7 +238,9 @@ if __name__ == '__main__':
             print(synthetic_sample.shape)
             print(synthetic_sample)
 
-            synthetic_sample = convert_to_probability_distribution(synthetic_sample)
+
+
+            synthetic_sample = convert_to_probability_distribution(synthetic_sample.to('cpu').detach().numpy())
 
             js_distance = compute_js_distance(segment, synthetic_sample)
 
