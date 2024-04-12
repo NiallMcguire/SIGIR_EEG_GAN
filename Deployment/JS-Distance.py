@@ -235,16 +235,14 @@ if __name__ == '__main__':
             synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float).to(device)
             synthetic_sample = synthetic_sample.resize(840).to(device)
 
-            print(synthetic_sample.shape)
-            print(synthetic_sample)
-
-
+            #print(synthetic_sample.shape)
+            #print(synthetic_sample)
 
             synthetic_sample = convert_to_probability_distribution(synthetic_sample.to('cpu').detach().numpy())
 
             js_distance = compute_js_distance(segment, synthetic_sample)
 
-            print(f"Word: {word}, JS Distance: {js_distance}")
+            #print(f"Word: {word}, JS Distance: {js_distance}")
 
             normal_distance_dict[word] = js_distance
 
