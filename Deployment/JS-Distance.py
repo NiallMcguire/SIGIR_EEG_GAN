@@ -1,4 +1,5 @@
 import argparse
+import os
 import pickle
 import numpy as np
 from scipy.spatial import distance
@@ -158,6 +159,14 @@ if __name__ == '__main__':
     # Random example
     # Compute Jensen-Shannon distance between two probability distributions
 
+    output_all_results_path = f'/users/gxb18167/Datasets/Checkpoints/train_decoding/results/JS_Distance'
+    if not os.path.exists(output_all_results_path):
+        os.makedirs(output_all_results_path)
+
+    output_file = f"{model}_{generation_type}_JS_Distance.csv"
+
+
+
     if model == "DCGAN_v1":
         gen_model = Networks.GeneratorDCGAN_v1(z_size).to(device)
     elif model == "DCGAN_v2":
@@ -188,6 +197,14 @@ if __name__ == '__main__':
 
             js_distance = compute_js_distance(segment, random_value)
             random_distance_dict[word] = js_distance
+
+            print(f"Word: {word}, JS Distance: {js_distance}")
+
+        with open(f"{output_all_results_path}/{output_file}", 'w') as file:
+            for word, js_distance in random_distance_dict.items():
+                file.write(f"{word}, {js_distance}\n")
+
+
     elif generation_type == 'normal':
         checkpoint = torch.load(
             fr"/users/gxb18167/Datasets/Checkpoints/{model}/{generator_path}",
@@ -222,6 +239,11 @@ if __name__ == '__main__':
             print(f"Word: {word}, JS Distance: {js_distance}")
 
             normal_distance_dict[word] = js_distance
+
+        with open(f"{output_all_results_path}/{output_file}", 'w') as file:
+            for word, js_distance in normal_distance_dict.items():
+                file.write(f"{word}, {js_distance}\n")
+
 
 
 
