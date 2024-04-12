@@ -221,6 +221,8 @@ if __name__ == '__main__':
 
             print(f"Word: {word}, JS Distance: {js_distance}")
 
+            normal_distance_dict[word] = js_distance
+
 
 
 
