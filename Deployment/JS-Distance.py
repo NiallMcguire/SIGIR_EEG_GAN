@@ -78,6 +78,26 @@ def compute_js_distance(p, q):
 
     return js_divergence
 
+def generate_samples(generator_name, g_model, input_z, input_t):
+    # Create random noise as input to the generator
+    # Generate samples using the generator model
+
+    if generator_name == "DCGAN_v1" or generator_name == "DCGAN_v2" or generator_name == "WGAN_v1" or generator_name == "WGAN_v2":
+        with torch.no_grad():
+            g_output = g_model(input_z)
+    else:
+        with torch.no_grad():
+            g_output = g_model(input_z, input_t)
+
+    return g_output
+
+def create_noise(batch_size, z_size, mode_z):
+    if mode_z == 'uniform':
+        input_z = torch.rand(batch_size, z_size)*2 - 1
+    elif mode_z == 'normal':
+        input_z = torch.randn(batch_size, z_size)
+    return input_z
+
 
 if __name__ == '__main__':
     print(torch.__version__)
@@ -176,6 +196,17 @@ if __name__ == '__main__':
         gen_model.to(device)
         # Set the model to evaluation mode
         gen_model.eval()
+
+        for word, segment in probability_distribution_dict.items():
+            word_embedding = word_embeddings[word]
+
+            input_z = create_noise(1, 100, "uniform").to(device)
+
+            word_embedding_tensor = torch.tensor(word_embedding, dtype=torch.float)
+            word_embedding_tensor = word_embedding_tensor.unsqueeze(0)
+
+            g_output = generate_samples(generator_name, gen_model, input_z, word_embedding_tensor)
+            g_output = g_output.to('cpu')
 
 
 
