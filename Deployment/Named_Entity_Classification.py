@@ -1,5 +1,8 @@
 import argparse
 import pickle
+from math import floor
+import random
+
 import numpy as np
 import nltk
 import torch
@@ -127,22 +130,47 @@ def generate_samples(generator_name, g_model, input_z, input_t):
     return g_output
 
 
-def augment_dataset(EEG_word_level_embeddings):
-    word_embedding = word_embeddings[word]
-    input_z = create_noise(1, 100, "uniform").to(device)
+def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_embeddings, Named_Entity_List):
+    Named_Entity_Augmentation = []
+    for word in Named_Entity_List:
 
-    word_embedding_tensor = torch.tensor(word_embedding, dtype=torch.float)
-    word_embedding_tensor = word_embedding_tensor.unsqueeze(0)
+        word_embedding = word_embeddings[word]
+        input_z = create_noise(1, 100, "uniform").to(device)
 
-    g_output = generate_samples(generator_name, gen_model, input_z, word_embedding_tensor)
-    g_output = g_output.to('cpu')
+        word_embedding_tensor = torch.tensor(word_embedding, dtype=torch.float)
+        word_embedding_tensor = word_embedding_tensor.unsqueeze(0)
 
-    EEG_synthetic_denormalized = (g_output * np.max(np.abs(EEG_word_level_embeddings))) + np.mean(
-        EEG_word_level_embeddings)
+        g_output = generate_samples(generator_name, gen_model, input_z, word_embedding_tensor)
+        g_output = g_output.to('cpu')
 
-    synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float).to(device)
-    synthetic_sample = synthetic_sample.resize(840).to(device)
-    synthetic_EEG_samples.append(synthetic_sample.to('cpu'))
+        EEG_synthetic_denormalized = (g_output * np.max(np.abs(EEG_word_level_embeddings))) + np.mean(
+            EEG_word_level_embeddings)
+
+        synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float).to(device)
+        synthetic_sample = synthetic_sample.resize(840).to(device)
+        Named_Entity_Augmentation.append(synthetic_sample)
+
+    return Named_Entity_Augmentation
+
+def flatten_EEG_labels(NE_list, EEG_list):
+
+    list_of_eeg_segments = []
+    list_of_word_labels = []
+    for i in range(len(NE_list)):
+        Named_Entity = NE_list[i]
+        Named_Entity_EEG_Segments = EEG_list[i]
+        for j in range(len(Named_Entity)):
+            word = Named_Entity[j]
+            for EEG_Segments in range(len(Named_Entity_EEG_Segments)):
+                EEG_Segment = Named_Entity_EEG_Segments[EEG_Segments][j]
+                list_of_eeg_segments.append(EEG_Segment)
+                list_of_word_labels.append(word)
+
+    return list_of_eeg_segments, list_of_word_labels
+
+
+
+
 
 if __name__ == '__main__':
     print(torch.__version__)
@@ -202,6 +230,7 @@ if __name__ == '__main__':
 
     if augmentation_size > 0:
         print("Augmenting data")
+        list_of_eeg_segments, list_of_word_labels = flatten_EEG_labels(train_NE, train_EEG_segments)
         if aug_model == "DCGAN_v2":
             gen_model = Networks.GeneratorDCGAN_v2(100)
             model_name = "DCGAN_v2"
@@ -213,6 +242,15 @@ if __name__ == '__main__':
         gen_model.to(device)
         # Set the model to evaluation mode
         gen_model.eval()
+
+        Augmentation_size = floor(int(len(NE_list) / 100 * augmentation_size))
+        sampled_words = random.sample(NE_list, Augmentation_size)
+
+        for i in range(len(sampled_words)):
+            Named_Entity = sampled_words[i]
+            Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
+
+
 
         #randomly select EEG samples to augment
 
