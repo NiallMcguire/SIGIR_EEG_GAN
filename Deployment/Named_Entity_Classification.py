@@ -63,11 +63,8 @@ def create_word_label_embeddings(Word_Labels_List):
     #word, embedding = list(word_embeddings.items())[10]
     #print(f"Word: {word}, Embedding: {embedding}")
 
-    Embedded_Word_labels = []
-    for word in EEG_word_level_labels:
-        Embedded_Word_labels.append(word_embeddings[word])
 
-    return Embedded_Word_labels, word_embeddings
+    return word_embeddings
 
 def encode_labels(y):
     label_encoder = LabelEncoder()
