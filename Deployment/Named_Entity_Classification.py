@@ -130,6 +130,14 @@ if __name__ == '__main__':
     X_train_numpy = reshape_data(X_train_numpy)
     y_train_categorical = encode_labels(y_train)
 
+
+    validation_size = int(0.2 * len(X_train_numpy))
+    X_val = X_train_numpy[:validation_size]
+    y_val = y_train_categorical[:validation_size]
+    X_train_numpy = X_train_numpy[validation_size:]
+    y_train_categorical = y_train_categorical[validation_size:]
+
+
     X_test, y_test, NE_list_test = padding_x_y(test_EEG_segments, test_Classes, test_NE)
     X_test_numpy = np.array(X_test)
     X_test_numpy = reshape_data(X_test_numpy)
@@ -140,14 +148,20 @@ if __name__ == '__main__':
     x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train_categorical, dtype=torch.float32)  # Assuming your labels are integers
 
+    x_val_tensor = torch.tensor(X_val, dtype=torch.float32)
+    y_val_tensor = torch.tensor(y_val, dtype=torch.float32)  # Assuming your labels are integers
+
+
     # Create a custom dataset
     train_dataset = TensorDataset(x_train_tensor, y_train_tensor)
+    val_dataset = TensorDataset(x_val_tensor, y_val_tensor)
 
     # Define batch size
     batch_size = 32  # Adjust according to your preference
 
     # Create the train loader
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=True)
 
     # Define model parameters
     input_size = 840
@@ -161,3 +175,62 @@ if __name__ == '__main__':
     # Define loss function and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+    num_epochs = 10
+
+    best_valid_loss = float('inf')
+    best_model_state = None
+    patience = 3  # Number of epochs to wait for improvement
+    counter = 0  # Counter for patience
+
+    for epoch in range(num_epochs):
+        model.train()
+        total_loss = 0
+
+        for batch_x, batch_y in train_loader:
+            batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+
+            optimizer.zero_grad()
+
+            outputs = model(batch_x)
+
+            # Convert class probabilities to class indices
+            _, predicted = torch.max(outputs, 1)
+
+            loss = criterion(outputs, batch_y.squeeze())  # Ensure target tensor is Long type
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+
+        avg_loss = total_loss / len(train_loader)
+        print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}')
+
+        # Validation
+        model.eval()
+        with torch.no_grad():
+            valid_loss = 0
+            for batch_x, batch_y in val_loader:
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                outputs = model(batch_x)
+                loss = criterion(outputs, batch_y.squeeze())
+                valid_loss += loss.item()
+
+        avg_valid_loss = valid_loss / len(val_loader)
+        print(f'Validation Loss: {avg_valid_loss:.4f}')
+
+        # Early stopping and saving the best model
+        if avg_valid_loss < best_valid_loss:
+            best_valid_loss = avg_valid_loss
+            best_model_state = model.state_dict()
+            counter = 0
+        else:
+            counter += 1
+
+        if counter >= patience:
+            print("Early stopping!")
+            break
+
+    # Load the best model state
+    #if best_model_state is not None:
+        #model.load_state_dict(best_model_state)
