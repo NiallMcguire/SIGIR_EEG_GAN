@@ -66,6 +66,27 @@ def create_word_label_embeddings(Word_Labels_List):
 
     return word_embeddings
 
+
+def get_NE_embeddings(NE_list, word_embeddings):
+    NE_list_embeddings = []
+    for i in range(len(NE_list)):
+        max_length = 7
+        words = NE_list[i]
+        words_embedding_list = []
+        for word in words:
+            if word in word_embeddings:
+                embedding_word = word_embeddings[word]
+                words_embedding_list.append(embedding_word)
+            else:
+                print(word)
+        # padding
+        if len(words_embedding_list) < max_length:
+            for i in range(max_length - len(words_embedding_list)):
+                words_embedding_list.append(np.zeros(50))
+        NE_list_embeddings.append(words_embedding_list)
+
+    return NE_list_embeddings
+
 def encode_labels(y):
     label_encoder = LabelEncoder()
     encoded_labels = label_encoder.fit_transform(y)
@@ -127,6 +148,11 @@ if __name__ == '__main__':
     X_train_numpy = reshape_data(X_train_numpy)
     y_train_categorical = encode_labels(y_train)
 
+    NE_List_Flat = [word for sublist in NE_list for word in sublist]
+    NE_embeddings = get_NE_embeddings(NE_list, word_embeddings)
+
+
+
 
     validation_size = int(0.2 * len(X_train_numpy))
     X_val = X_train_numpy[:validation_size]
@@ -144,6 +170,7 @@ if __name__ == '__main__':
     # Convert numpy arrays to PyTorch tensors
     x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train_categorical, dtype=torch.float32)  # Assuming your labels are integers
+    associated_words_tensor = torch.tensor(NE_embeddings, dtype=torch.float32)
 
     x_val_tensor = torch.tensor(X_val, dtype=torch.float32)
     y_val_tensor = torch.tensor(y_val, dtype=torch.float32)  # Assuming your labels are integers
