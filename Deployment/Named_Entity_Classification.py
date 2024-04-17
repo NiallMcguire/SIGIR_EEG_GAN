@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     model = args.model
-    Generation_Size = args.augmentation_size
+    augmentation_size = args.augmentation_size
 
     # read in train and test data
 
@@ -178,6 +178,7 @@ if __name__ == '__main__':
 
     num_epochs = 10
 
+
     best_valid_loss = float('inf')
     best_model_state = None
     patience = 3  # Number of epochs to wait for improvement
@@ -229,8 +230,10 @@ if __name__ == '__main__':
 
         if counter >= patience:
             print("Early stopping!")
+
+
             break
 
-    # Load the best model state
-    #if best_model_state is not None:
-        #model.load_state_dict(best_model_state)
+    # Save the best model state to a file
+    if best_model_state is not None:
+        torch.save(best_model_state, f'/users/gxb18167/Datasets/NER/{model}/{augmentation_size}_best_model.pth')
