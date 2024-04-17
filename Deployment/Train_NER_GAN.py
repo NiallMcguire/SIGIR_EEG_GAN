@@ -344,6 +344,32 @@ def flatten_EEG_labels(NE_list, EEG_list):
 
     return list_of_eeg_segments, list_of_word_labels
 
+def save_lists_to_file(path):
+    # Open the pickle file in binary write mode
+    with open(path, 'rb') as f:
+    # Load each list from the file
+        NE = pickle.load(f)
+        EEG_segments = pickle.load(f)
+        Classes = pickle.load(f)
+
+    return NE, EEG_segments, Classes
+
+def create_word_label_embeddings(Word_Labels_List):
+    tokenized_words = []
+    for i in range(len(Word_Labels_List)):
+        tokenized_words.append([Word_Labels_List[i]])
+    model = Word2Vec(sentences=tokenized_words, vector_size=50, window=5, min_count=1, workers=4)
+    word_embeddings = {word: model.wv[word] for word in model.wv.index_to_key}
+    print("Number of word embeddings:", len(word_embeddings))
+    #word, embedding = list(word_embeddings.items())[10]
+    #print(f"Word: {word}, Embedding: {embedding}")
+
+    Embedded_Word_labels = []
+    for word in Word_Labels_List:
+        Embedded_Word_labels.append(word_embeddings[word])
+
+    return word_embeddings, Embedded_Word_labels
+
 if __name__ == '__main__':
     print(torch.__version__)
     print("GPU Available:", torch.cuda.is_available())
@@ -396,8 +422,15 @@ if __name__ == '__main__':
 
     test_path = r"C:\Users\gxb18167\PycharmProjects\SIGIR_EEG_GAN\Development\Named-Entity-Classification\Data-Management\test_NER.pkl"
 
-    print(EEG_word_level_labels[:10])
+    train_NE, train_EEG_segments, train_Classes = save_lists_to_file(train_path)
+    test_NE, test_EEG_segments, test_Classes = save_lists_to_file(test_path)
 
+    list_of_eeg_segments, list_of_word_labels = flatten_EEG_labels(train_NE, train_EEG_segments)
+
+    word_embeddings, list_of_embeddings = create_word_label_embeddings(list_of_word_labels)
+    trainloader = data.create_dataloader(list_of_eeg_segments, list_of_embeddings)
+
+    '''
     if Generation_Size == "Word_Level":
         Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings(EEG_word_level_labels, word_embedding_dim)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
@@ -415,6 +448,7 @@ if __name__ == '__main__':
     elif Generation_Size == "BERT":
         Embedded_Word_labels, word_embeddings = data.create_word_label_embeddings_bert(EEG_word_level_labels, word_embedding_dim)
         trainloader = data.create_dataloader(EEG_word_level_embeddings, Embedded_Word_labels)
+    '''
 
     if Generation_Size == "Contextual":
         word_embedding_dim = 150
