@@ -121,6 +121,7 @@ if __name__ == '__main__':
     parser.add_argument('--augmentation_size', type=int)
     parser.add_argument('--epochs', type=int)
     parser.add_argument('--aug_model', type=int)
+    parser.add_argument('--generator_path', type=str)
 
     args = parser.parse_args()
     model = args.model
@@ -163,11 +164,15 @@ if __name__ == '__main__':
     if augmentation_size > 0:
         print("Augmenting data")
         if aug_model == "DCGAN_v2":
-            generator = Networks.GeneratorDCGAN_v2(100)
+            gen_model = Networks.GeneratorDCGAN_v2(100)
 
             checkpoint = torch.load(
                 fr"/users/gxb18167/Datasets/Checkpoints/NER/{aug_model}/{generator_path}",
                 map_location=device)
+            gen_model.load_state_dict(checkpoint['gen_model_state_dict'])
+            gen_model.to(device)
+            # Set the model to evaluation mode
+            gen_model.eval()
 
 
     # Convert numpy arrays to PyTorch tensors
