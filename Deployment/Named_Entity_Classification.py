@@ -264,12 +264,6 @@ if __name__ == '__main__':
                 X_train_numpy.append(Synthetic_Named_Entity)
                 y_train_categorical.append(sampled_labels[i])
 
-
-
-
-
-
-
     # Convert numpy arrays to PyTorch tensors
     x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train_categorical, dtype=torch.float32)  # Assuming your labels are integers
