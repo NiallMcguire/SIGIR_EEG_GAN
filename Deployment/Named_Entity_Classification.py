@@ -126,6 +126,7 @@ if __name__ == '__main__':
     model = args.model
     augmentation_size = args.augmentation_size
     epochs = args.epochs
+    aug_model = args.aug_model
 
     # read in train and test data
 
@@ -210,7 +211,7 @@ if __name__ == '__main__':
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
-    save_path = folder_path + f'/Aug_size_{augmentation_size}_Epochs_{epochs}_best_model.pth'
+    save_path = folder_path + f'/Aug_size_{augmentation_size}_Epochs_{epochs}_Aug_Model_{aug_model}_best_model.pth'
 
     for epoch in range(num_epochs):
         model.train()
