@@ -80,9 +80,6 @@ def get_NE_embeddings(NE_list, word_embeddings):
             else:
                 print(word)
         # padding
-        if len(words_embedding_list) < max_length:
-            for i in range(max_length - len(words_embedding_list)):
-                words_embedding_list.append(np.zeros(50))
         NE_list_embeddings.append(words_embedding_list)
 
     return NE_list_embeddings
@@ -170,7 +167,7 @@ if __name__ == '__main__':
     # Convert numpy arrays to PyTorch tensors
     x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train_categorical, dtype=torch.float32)  # Assuming your labels are integers
-    associated_words_tensor = torch.tensor(NE_embeddings, dtype=torch.float32)
+
 
     x_val_tensor = torch.tensor(X_val, dtype=torch.float32)
     y_val_tensor = torch.tensor(y_val, dtype=torch.float32)  # Assuming your labels are integers
@@ -216,7 +213,7 @@ if __name__ == '__main__':
         model.train()
         total_loss = 0
 
-        for batch_x, batch_y, word_embedding in train_loader:
+        for batch_x, batch_y in train_loader:
             batch_x, batch_y = batch_x.to(device), batch_y.to(device)
 
             optimizer.zero_grad()
