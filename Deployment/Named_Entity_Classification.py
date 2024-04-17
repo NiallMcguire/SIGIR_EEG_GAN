@@ -174,7 +174,7 @@ if __name__ == '__main__':
 
 
     # Create a custom dataset
-    train_dataset = TensorDataset(x_train_tensor, y_train_tensor, associated_words_tensor)
+    train_dataset = TensorDataset(x_train_tensor, y_train_tensor)
     val_dataset = TensorDataset(x_val_tensor, y_val_tensor)
 
     # Define batch size
