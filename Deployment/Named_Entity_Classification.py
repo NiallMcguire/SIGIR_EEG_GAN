@@ -170,7 +170,11 @@ if __name__ == '__main__':
     num_classes = 3
 
     # Instantiate the model
-    model = Networks.BLSTMClassifier(input_size, hidden_size, num_layers, num_classes)
+    if model == 'BLSTM_v1':
+        model = Networks.BLSTMClassifier(input_size, hidden_size, num_layers, num_classes)
+
+
+
     model.to(device)
     # Define loss function and optimizer
     criterion = nn.CrossEntropyLoss()
