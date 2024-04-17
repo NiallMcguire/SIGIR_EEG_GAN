@@ -3,6 +3,13 @@ import pickle
 import numpy as np
 import nltk
 import torch
+import torch.nn as nn
+import Networks
+import torch.optim as optim
+import torch
+from torch.utils.data import DataLoader, TensorDataset
+
+# Assuming x_train and y_train are your input data and target labels, respectively
 
 nltk.download('punkt')
 from gensim.models import Word2Vec
@@ -114,3 +121,43 @@ if __name__ == '__main__':
         EEG_word_level_labels = pickle.load(file)
 
     Embedded_Word_labels, word_embeddings = create_word_label_embeddings(EEG_word_level_labels)
+    train_NE, train_EEG_segments, train_Classes = save_lists_to_file(train_path)
+    test_NE, test_EEG_segments, test_Classes = save_lists_to_file(test_path)
+
+    # padding
+    X_train, y_train, NE_list = padding_x_y(train_EEG_segments, train_Classes, train_NE)
+    X_train_numpy = np.array(X_train)
+    X_train_numpy = reshape_data(X_train_numpy)
+    y_train_categorical = encode_labels(y_train)
+
+    X_test, y_test, NE_list_test = padding_x_y(test_EEG_segments, test_Classes, test_NE)
+    X_test_numpy = np.array(X_test)
+    X_test_numpy = reshape_data(X_test_numpy)
+    y_test_categorical = encode_labels(y_test)
+
+
+    # Convert numpy arrays to PyTorch tensors
+    x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
+    y_train_tensor = torch.tensor(y_train_categorical, dtype=torch.float32)  # Assuming your labels are integers
+
+    # Create a custom dataset
+    train_dataset = TensorDataset(x_train_tensor, y_train_tensor)
+
+    # Define batch size
+    batch_size = 32  # Adjust according to your preference
+
+    # Create the train loader
+    train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+
+    # Define model parameters
+    input_size = 840
+    hidden_size = 64
+    num_layers = 2
+    num_classes = 3
+
+    # Instantiate the model
+    model = Networks.BLSTMClassifier(input_size, hidden_size, num_layers, num_classes)
+    model.to(device)
+    # Define loss function and optimizer
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
