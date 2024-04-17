@@ -106,6 +106,44 @@ def reshape_data(X):
 
     return new_list
 
+def create_noise(batch_size, z_size, mode_z):
+    if mode_z == 'uniform':
+        input_z = torch.rand(batch_size, z_size)*2 - 1
+    elif mode_z == 'normal':
+        input_z = torch.randn(batch_size, z_size)
+    return input_z
+
+def generate_samples(generator_name, g_model, input_z, input_t):
+    # Create random noise as input to the generator
+    # Generate samples using the generator model
+
+    if generator_name == "DCGAN_v1" or generator_name == "DCGAN_v2" or generator_name == "WGAN_v1" or generator_name == "WGAN_v2":
+        with torch.no_grad():
+            g_output = g_model(input_z)
+    else:
+        with torch.no_grad():
+            g_output = g_model(input_z, input_t)
+
+    return g_output
+
+
+def augment_dataset(EEG_word_level_embeddings):
+    word_embedding = word_embeddings[word]
+    input_z = create_noise(1, 100, "uniform").to(device)
+
+    word_embedding_tensor = torch.tensor(word_embedding, dtype=torch.float)
+    word_embedding_tensor = word_embedding_tensor.unsqueeze(0)
+
+    g_output = generate_samples(generator_name, gen_model, input_z, word_embedding_tensor)
+    g_output = g_output.to('cpu')
+
+    EEG_synthetic_denormalized = (g_output * np.max(np.abs(EEG_word_level_embeddings))) + np.mean(
+        EEG_word_level_embeddings)
+
+    synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float).to(device)
+    synthetic_sample = synthetic_sample.resize(840).to(device)
+    synthetic_EEG_samples.append(synthetic_sample.to('cpu'))
+
 if __name__ == '__main__':
     print(torch.__version__)
     print("GPU Available:", torch.cuda.is_available())
@@ -128,6 +166,7 @@ if __name__ == '__main__':
     augmentation_size = args.augmentation_size
     epochs = args.epochs
     aug_model = args.aug_model
+    generator_path = args.generator_path
 
     # read in train and test data
 
@@ -165,14 +204,20 @@ if __name__ == '__main__':
         print("Augmenting data")
         if aug_model == "DCGAN_v2":
             gen_model = Networks.GeneratorDCGAN_v2(100)
+            model_name = "DCGAN_v2"
 
-            checkpoint = torch.load(
-                fr"/users/gxb18167/Datasets/Checkpoints/NER/{aug_model}/{generator_path}",
-                map_location=device)
-            gen_model.load_state_dict(checkpoint['gen_model_state_dict'])
-            gen_model.to(device)
-            # Set the model to evaluation mode
-            gen_model.eval()
+        checkpoint = torch.load(
+            fr"/users/gxb18167/Datasets/Checkpoints/NER/{aug_model}/{generator_path}",
+            map_location=device)
+        gen_model.load_state_dict(checkpoint['gen_model_state_dict'])
+        gen_model.to(device)
+        # Set the model to evaluation mode
+        gen_model.eval()
+
+        #randomly select EEG samples to augment
+
+
+
 
 
     # Convert numpy arrays to PyTorch tensors
@@ -204,8 +249,6 @@ if __name__ == '__main__':
     # Instantiate the model
     if model == 'BLSTM_v1':
         model = Networks.BLSTMClassifier(input_size, hidden_size, num_layers, num_classes)
-
-
 
     model.to(device)
     # Define loss function and optimizer
