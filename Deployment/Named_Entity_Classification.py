@@ -129,13 +129,6 @@ if __name__ == '__main__':
 
     test_path = r"/users/gxb18167/Datasets/ZuCo/test_NER.pkl"
 
-    # To load the lists from the file:
-    with open("/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs.pkl",
-              'rb') as file:
-        EEG_word_level_embeddings = pickle.load(file)
-        EEG_word_level_labels = pickle.load(file)
-
-    Embedded_Word_labels, word_embeddings = create_word_label_embeddings(EEG_word_level_labels)
     train_NE, train_EEG_segments, train_Classes = save_lists_to_file(train_path)
     test_NE, test_EEG_segments, test_Classes = save_lists_to_file(test_path)
 
@@ -146,6 +139,7 @@ if __name__ == '__main__':
     y_train_categorical = encode_labels(y_train)
 
     NE_List_Flat = [word for sublist in NE_list for word in sublist]
+    word_embeddings = create_word_label_embeddings(NE_List_Flat)
     NE_embeddings = get_NE_embeddings(NE_list, word_embeddings)
 
     validation_size = int(0.2 * len(X_train_numpy))
