@@ -42,7 +42,7 @@ module load anaconda/python-3.9.7/2021.11
 
 #Modify the line below to run your program. This is an example
 #=========================================================
-python /users/gxb18167/SIGIR_EEG_GAN/Deployment/Named_Entity_Classification.py --model BLSTM_v1 --augmentation_size 0
+python /users/gxb18167/SIGIR_EEG_GAN/Deployment/Named_Entity_Classification.py --model BLSTM_v1 --augmentation_size 5
 
 
 # Do not change the line below
