@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 import nltk
 import torch
+import os
 import torch.nn as nn
 import Networks
 import torch.optim as optim
@@ -118,10 +119,12 @@ if __name__ == '__main__':
 
     parser.add_argument('--model', type=str)
     parser.add_argument('--augmentation_size', type=int)
+    parser.add_argument('--epochs', type=int)
 
     args = parser.parse_args()
     model = args.model
     augmentation_size = args.augmentation_size
+    epochs = args.epochs
 
     # read in train and test data
 
@@ -195,13 +198,19 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    num_epochs = 10
+    num_epochs = epochs
 
 
     best_valid_loss = float('inf')
     best_model_state = None
     patience = 3  # Number of epochs to wait for improvement
     counter = 0  # Counter for patience
+
+    folder_path = f"/users/gxb18167/Datasets/NER/{model}"
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    save_path = folder_path + f'/Aug_size_{augmentation_size}_Epochs_{epochs}_best_model.pth'
 
     for epoch in range(num_epochs):
         model.train()
@@ -253,4 +262,4 @@ if __name__ == '__main__':
 
     # Save the best model state to a file
     if best_model_state is not None:
-        torch.save(best_model_state, f'/users/gxb18167/Datasets/NER/{model}/{augmentation_size}_best_model.pth')
+        torch.save(best_model_state, save_path)
