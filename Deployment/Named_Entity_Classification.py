@@ -157,7 +157,7 @@ if __name__ == '__main__':
     val_dataset = TensorDataset(x_val_tensor, y_val_tensor)
 
     # Define batch size
-    batch_size = 32  # Adjust according to your preference
+    batch_size = 32
 
     # Create the train loader
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
@@ -230,8 +230,6 @@ if __name__ == '__main__':
 
         if counter >= patience:
             print("Early stopping!")
-
-
             break
 
     # Save the best model state to a file
