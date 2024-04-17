@@ -120,6 +120,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str)
     parser.add_argument('--augmentation_size', type=int)
     parser.add_argument('--epochs', type=int)
+    parser.add_argument('--aug_model', type=int)
 
     args = parser.parse_args()
     model = args.model
@@ -199,7 +200,6 @@ if __name__ == '__main__':
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     num_epochs = epochs
-
 
     best_valid_loss = float('inf')
     best_model_state = None
