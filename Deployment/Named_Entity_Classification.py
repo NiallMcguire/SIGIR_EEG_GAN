@@ -162,6 +162,13 @@ if __name__ == '__main__':
 
     if augmentation_size > 0:
         print("Augmenting data")
+        if aug_model == "DCGAN_v2":
+            generator = Networks.GeneratorDCGAN_v2(100)
+
+            checkpoint = torch.load(
+                fr"/users/gxb18167/Datasets/Checkpoints/NER/{aug_model}/{generator_path}",
+                map_location=device)
+
 
     # Convert numpy arrays to PyTorch tensors
     x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
