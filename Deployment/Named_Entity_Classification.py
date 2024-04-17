@@ -177,7 +177,7 @@ if __name__ == '__main__':
 
 
     # Create a custom dataset
-    train_dataset = TensorDataset(x_train_tensor, y_train_tensor)
+    train_dataset = TensorDataset(x_train_tensor, y_train_tensor, associated_words_tensor)
     val_dataset = TensorDataset(x_val_tensor, y_val_tensor)
 
     # Define batch size
@@ -216,7 +216,7 @@ if __name__ == '__main__':
         model.train()
         total_loss = 0
 
-        for batch_x, batch_y in train_loader:
+        for batch_x, batch_y, word_embedding in train_loader:
             batch_x, batch_y = batch_x.to(device), batch_y.to(device)
 
             optimizer.zero_grad()
