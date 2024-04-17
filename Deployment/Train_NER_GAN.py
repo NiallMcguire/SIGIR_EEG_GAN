@@ -328,7 +328,21 @@ def g_train_ACGAN(x):
 
     return g_loss.data.item()
 
+def flatten_EEG_labels(NE_list, EEG_list):
 
+    list_of_eeg_segments = []
+    list_of_word_labels = []
+    for i in range(len(NE_list)):
+        Named_Entity = NE_list[i]
+        Named_Entity_EEG_Segments = EEG_list[i]
+        for j in range(len(Named_Entity)):
+            word = Named_Entity[j]
+            for EEG_Segments in range(len(Named_Entity_EEG_Segments)):
+                EEG_Segment = Named_Entity_EEG_Segments[EEG_Segments][j]
+                list_of_eeg_segments.append(EEG_Segment)
+                list_of_word_labels.append(word)
+
+    return list_of_eeg_segments, list_of_word_labels
 
 if __name__ == '__main__':
     print(torch.__version__)
