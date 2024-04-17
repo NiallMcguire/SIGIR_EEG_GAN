@@ -148,9 +148,6 @@ if __name__ == '__main__':
     NE_List_Flat = [word for sublist in NE_list for word in sublist]
     NE_embeddings = get_NE_embeddings(NE_list, word_embeddings)
 
-
-
-
     validation_size = int(0.2 * len(X_train_numpy))
     X_val = X_train_numpy[:validation_size]
     y_val = y_train_categorical[:validation_size]
@@ -163,6 +160,9 @@ if __name__ == '__main__':
     X_test_numpy = reshape_data(X_test_numpy)
     y_test_categorical = encode_labels(y_test)
 
+
+    if augmentation_size > 0:
+        print("Augmenting data")
 
     # Convert numpy arrays to PyTorch tensors
     x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
