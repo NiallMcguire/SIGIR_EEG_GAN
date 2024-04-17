@@ -130,8 +130,9 @@ def generate_samples(generator_name, g_model, input_z, input_t):
     return g_output
 
 
-def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_embeddings, Named_Entity_List):
+def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_embeddings, Named_Entity_List, max_length = 7):
     Named_Entity_Augmentation = []
+
     for word in Named_Entity_List:
 
         word_embedding = word_embeddings[word]
@@ -149,6 +150,11 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float).to(device)
         synthetic_sample = synthetic_sample.resize(840).to(device)
         Named_Entity_Augmentation.append(synthetic_sample)
+
+    if len(Named_Entity_Augmentation) < max_length:
+        padding_count = max_length - len(Named_Entity_Augmentation)
+        for i in range(padding_count):
+            Named_Entity_Augmentation.append(torch.zeros(840).to(device))
 
     return Named_Entity_Augmentation
 
@@ -243,16 +249,22 @@ if __name__ == '__main__':
         # Set the model to evaluation mode
         gen_model.eval()
 
+        paris = list(zip(NE_list, y_train_categorical))
+
+
         Augmentation_size = floor(int(len(NE_list) / 100 * augmentation_size))
-        sampled_words = random.sample(NE_list, Augmentation_size)
+        sampled_words = random.sample(paris, Augmentation_size)
+
+        sampled_words, sampled_labels = zip(*sampled_words)
 
         for i in range(len(sampled_words)):
             Named_Entity = sampled_words[i]
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
+            for j in range(len(Synthetic_Named_Entity)):
+                X_train_numpy.append(Synthetic_Named_Entity)
+                y_train_categorical.append(sampled_labels[i])
 
 
-
-        #randomly select EEG samples to augment
 
 
 
