@@ -395,5 +395,9 @@ if __name__ == '__main__':
         accuracy = correct / total
         print(f'Test Accuracy: {accuracy:.4f}')
 
+    #save test accuracy
+    with open(f"/users/gxb18167/Datasets/NER/{model}/Aug_size_{augmentation_size}_Epochs_{epochs}_Aug_Model_{aug_model}_test_accuracy.txt", "w") as f:
+        f.write(f"Test Accuracy: {accuracy:.4f}")
+
 
 
