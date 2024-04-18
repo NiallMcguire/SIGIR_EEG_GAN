@@ -236,6 +236,9 @@ if __name__ == '__main__':
 
 
     X_test, y_test, NE_list_test = padding_x_y(test_EEG_segments, test_Classes, test_NE)
+    print("X Test Size:", len(X_test))
+    print("Y Test Size:", len(y_test))
+
     X_test_numpy = np.array(X_test)
     X_test_numpy = reshape_data(X_test_numpy)
     y_test_categorical = encode_labels(y_test)
