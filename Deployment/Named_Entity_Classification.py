@@ -91,8 +91,8 @@ def get_NE_embeddings(NE_list, word_embeddings):
     return NE_list_embeddings
 
 def encode_labels(y):
-    label_encoder = {label: idx for idx, label in enumerate(set(y_train))}
-    encoded_labels = [label_encoder[label] for label in y_train]
+    label_encoder = {label: idx for idx, label in enumerate(set(y))}
+    encoded_labels = [label_encoder[label] for label in y]
 
     # Step 2: Convert numerical labels to tensor
     encoded_labels_tensor = torch.tensor(encoded_labels)
@@ -236,15 +236,12 @@ if __name__ == '__main__':
 
 
     X_test, y_test, NE_list_test = padding_x_y(test_EEG_segments, test_Classes, test_NE)
-    print("X Test Size:", len(X_test))
-    print("Y Test Size:", len(y_test))
+
 
     X_test_numpy = np.array(X_test)
     X_test_numpy = reshape_data(X_test_numpy)
     y_test_categorical = encode_labels(y_test)
 
-    print("X Test Size:", len(X_test_numpy))
-    print("Y Test Size:", len(y_test_categorical))
 
 
     if augmentation_size > 0:
