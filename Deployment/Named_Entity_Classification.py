@@ -275,19 +275,17 @@ if __name__ == '__main__':
     x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train_categorical, dtype=torch.float32)  # Assuming your labels are integers
 
-
     x_val_tensor = torch.tensor(X_val, dtype=torch.float32)
     y_val_tensor = torch.tensor(y_val, dtype=torch.float32)  # Assuming your labels are integers
 
-    X_test_numpy = torch.tensor(X_test_numpy, dtype=torch.float32)
-    y_test_categorical = torch.tensor(y_test_categorical, dtype=torch.float32)
+    x_test_tensor = torch.tensor(X_test_numpy, dtype=torch.float32)
+    y_test_tensor = torch.tensor(y_test_categorical, dtype=torch.float32)
 
 
     # Create a custom dataset
     train_dataset = TensorDataset(x_train_tensor, y_train_tensor)
     val_dataset = TensorDataset(x_val_tensor, y_val_tensor)
-
-    test_dataset = TensorDataset(X_test_numpy, y_test_categorical)
+    test_dataset = TensorDataset(x_test_tensor, y_test_tensor)
 
     # Define batch size
     batch_size = 64
