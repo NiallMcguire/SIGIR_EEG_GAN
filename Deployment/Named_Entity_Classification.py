@@ -199,7 +199,7 @@ if __name__ == '__main__':
     parser.add_argument('--model', type=str)
     parser.add_argument('--augmentation_size', type=int)
     parser.add_argument('--epochs', type=int)
-    parser.add_argument('--aug_model', type=int)
+    parser.add_argument('--aug_model', type=str)
     parser.add_argument('--generator_path', type=str)
 
     args = parser.parse_args()
