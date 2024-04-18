@@ -363,9 +363,9 @@ if __name__ == '__main__':
         else:
             counter += 1
 
-        if counter >= patience:
-            print("Early stopping!")
-            break
+        #if counter >= patience:
+            #print("Early stopping!")
+            #break
 
     # Save the best model state to a file
     if best_model_state is not None:
