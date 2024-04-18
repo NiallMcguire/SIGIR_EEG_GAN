@@ -378,27 +378,22 @@ if __name__ == '__main__':
     if best_model_state is not None:
         torch.save(best_model_state, save_path)
 
+
     # Test the model
     model.load_state_dict(torch.load(save_path))
     model.eval()
-
     with torch.no_grad():
-        test_loss = 0
         correct = 0
         total = 0
-
         for batch_x, batch_y in test_loader:
             batch_x, batch_y = batch_x.to(device), batch_y.to(device)
             outputs = model(batch_x)
-            loss = criterion(outputs, batch_y.squeeze())
-            test_loss += loss.item()
-
-            # Compute accuracy
             _, predicted = torch.max(outputs, 1)
             total += batch_y.size(0)
-            correct += (predicted == batch_y).sum().item()  # Compare predicted labels directly with batch_y
+            correct += (predicted == torch.argmax(batch_y, 1)).sum().item()
 
-        avg_test_loss = test_loss / len(test_loader)
         accuracy = correct / total
-        print(f'Test Loss: {avg_test_loss:.4f}, Accuracy: {accuracy:.4f}')
+        print(f'Test Accuracy: {accuracy:.4f}')
+
+
 
