@@ -310,7 +310,7 @@ if __name__ == '__main__':
 
     best_valid_loss = float('inf')
     best_model_state = None
-    patience = 3  # Number of epochs to wait for improvement
+    patience = 5  # Number of epochs to wait for improvement
     counter = 0  # Counter for patience
 
     folder_path = f"/users/gxb18167/Datasets/NER/{model}"
