@@ -8,12 +8,13 @@ import nltk
 import torch
 import os
 import torch.nn as nn
-from keras.utils import to_categorical
+
 
 import Networks
 import torch.optim as optim
 import torch
 from torch.utils.data import DataLoader, TensorDataset
+import torch.nn.functional as F
 import pickle
 
 # Assuming x_train and y_train are your input data and target labels, respectively
@@ -90,11 +91,17 @@ def get_NE_embeddings(NE_list, word_embeddings):
     return NE_list_embeddings
 
 def encode_labels(y):
-    label_encoder = LabelEncoder()
-    encoded_labels = label_encoder.fit_transform(y)
-    y_categorical = to_categorical(encoded_labels)
+    label_encoder = {label: idx for idx, label in enumerate(set(y_train))}
+    encoded_labels = [label_encoder[label] for label in y_train]
 
-    return y_categorical
+    # Step 2: Convert numerical labels to tensor
+    encoded_labels_tensor = torch.tensor(encoded_labels)
+
+    # Step 3: Convert numerical labels tensor to one-hot encoded tensor
+    num_classes = len(label_encoder)
+    y_onehot = F.one_hot(encoded_labels_tensor, num_classes=num_classes).float()
+
+    return y_onehot
 
 
 def reshape_data(X):
