@@ -285,7 +285,7 @@ if __name__ == '__main__':
     val_dataset = TensorDataset(x_val_tensor, y_val_tensor)
 
     # Define batch size
-    batch_size = 32
+    batch_size = 64
 
     # Create the train loader
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
@@ -310,7 +310,7 @@ if __name__ == '__main__':
 
     best_valid_loss = float('inf')
     best_model_state = None
-    patience = 10  # Number of epochs to wait for improvement
+    patience = 20  # Number of epochs to wait for improvement
     counter = 0  # Counter for patience
 
     folder_path = f"/users/gxb18167/Datasets/NER/{model}"
