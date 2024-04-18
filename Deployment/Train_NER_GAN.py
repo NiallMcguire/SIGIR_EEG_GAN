@@ -2,6 +2,7 @@ import sys
 import nltk
 import torch.nn as nn
 import numpy as np
+from gensim.models import Word2Vec
 from sklearn.preprocessing import LabelEncoder
 nltk.download('punkt')
 from torch.autograd import grad as torch_grad
