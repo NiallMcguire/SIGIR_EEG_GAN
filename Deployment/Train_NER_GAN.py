@@ -418,9 +418,9 @@ if __name__ == '__main__':
             EEG_word_level_embeddings = pickle.load(file)
             EEG_word_level_labels = pickle.load(file)
 
-    train_path = r"C:\Users\gxb18167\PycharmProjects\SIGIR_EEG_GAN\Development\Named-Entity-Classification\Data-Management\train_NER.pkl"
+    train_path = r"/users/gxb18167/Datasets/ZuCo/train_NER.pkl"
 
-    test_path = r"C:\Users\gxb18167\PycharmProjects\SIGIR_EEG_GAN\Development\Named-Entity-Classification\Data-Management\test_NER.pkl"
+    test_path = r"/users/gxb18167/Datasets/ZuCo/test_NER.pkl"
 
     train_NE, train_EEG_segments, train_Classes = save_lists_to_file(train_path)
     test_NE, test_EEG_segments, test_Classes = save_lists_to_file(test_path)
