@@ -240,6 +240,9 @@ if __name__ == '__main__':
     X_test_numpy = reshape_data(X_test_numpy)
     y_test_categorical = encode_labels(y_test)
 
+    print("X Test Size:", len(X_test_numpy))
+    print("Y Test Size:", len(y_test_categorical))
+
 
     if augmentation_size > 0:
         print("Augmenting data")
