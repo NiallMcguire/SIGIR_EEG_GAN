@@ -279,10 +279,15 @@ if __name__ == '__main__':
     x_val_tensor = torch.tensor(X_val, dtype=torch.float32)
     y_val_tensor = torch.tensor(y_val, dtype=torch.float32)  # Assuming your labels are integers
 
+    X_test_numpy = torch.tensor(X_test_numpy, dtype=torch.float32)
+    y_test_categorical = torch.tensor(y_test_categorical, dtype=torch.float32)
+
 
     # Create a custom dataset
     train_dataset = TensorDataset(x_train_tensor, y_train_tensor)
     val_dataset = TensorDataset(x_val_tensor, y_val_tensor)
+
+    test_dataset = TensorDataset(X_test_numpy, y_test_categorical)
 
     # Define batch size
     batch_size = 64
@@ -290,6 +295,7 @@ if __name__ == '__main__':
     # Create the train loader
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 
     # Define model parameters
     input_size = 840
@@ -370,3 +376,26 @@ if __name__ == '__main__':
     # Save the best model state to a file
     if best_model_state is not None:
         torch.save(best_model_state, save_path)
+
+
+    # Test the model
+    model.load_state_dict(torch.load(save_path))
+    model.eval()
+    with torch.no_grad():
+        test_loss = 0
+        correct = 0
+        total = 0
+        for batch_x, batch_y in test_loader:
+            batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+            outputs = model(batch_x)
+            loss = criterion(outputs, batch_y.squeeze())
+            test_loss += loss.item()
+
+            # Convert class probabilities to class indices
+            _, predicted = torch.max(outputs, 1)
+            total += batch_y.size(0)
+            correct += (predicted == batch_y.squeeze()).sum().item()
+
+        avg_test_loss = test_loss / len(test_loader)
+        accuracy = correct / total
+        print(f'Test Loss: {avg_test_loss:.4f}, Accuracy: {accuracy:.4f}')
