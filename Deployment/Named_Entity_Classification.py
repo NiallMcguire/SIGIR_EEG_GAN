@@ -3,10 +3,13 @@ import pickle
 from math import floor
 import random
 import numpy as np
+import keras
 import nltk
 import torch
 import os
 import torch.nn as nn
+from keras.utils import to_categorical
+
 import Networks
 import torch.optim as optim
 import torch
