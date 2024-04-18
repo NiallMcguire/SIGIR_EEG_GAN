@@ -92,7 +92,6 @@ def get_NE_embeddings(NE_list, word_embeddings):
 def encode_labels(y):
     label_encoder = LabelEncoder()
     encoded_labels = label_encoder.fit_transform(y)
-
     y_categorical = to_categorical(encoded_labels)
 
     return y_categorical
