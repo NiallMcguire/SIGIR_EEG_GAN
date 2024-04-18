@@ -2,7 +2,6 @@ import argparse
 import pickle
 from math import floor
 import random
-
 import numpy as np
 import nltk
 import torch
@@ -12,14 +11,13 @@ import Networks
 import torch.optim as optim
 import torch
 from torch.utils.data import DataLoader, TensorDataset
+import pickle
 
 # Assuming x_train and y_train are your input data and target labels, respectively
 
 nltk.download('punkt')
 from gensim.models import Word2Vec
-from keras.utils import to_categorical
 from nltk.tokenize import word_tokenize
-import pickle
 from sklearn.preprocessing import LabelEncoder
 
 def save_lists_to_file(path):
