@@ -259,11 +259,11 @@ if __name__ == '__main__':
         # Set the model to evaluation mode
         gen_model.eval()
 
-        paris = list(zip(NE_list, y_train_categorical))
+        pairs = list(zip(NE_list, y_train_categorical))
 
 
         Augmentation_size = floor(int(len(NE_list) / 100 * augmentation_size))
-        sampled_words = random.sample(paris, Augmentation_size)
+        sampled_words = random.sample(pairs, Augmentation_size)
 
         sampled_words, sampled_labels = zip(*sampled_words)
 
