@@ -255,6 +255,8 @@ if __name__ == '__main__':
             fr"/users/gxb18167/Datasets/Checkpoints/NER/{aug_model}/{generator_path}",
             map_location=device)
 
+        print("Loading Generator Model from: ", fr"/users/gxb18167/Datasets/Checkpoints/NER/{aug_model}/{generator_path}")
+
 
         gen_model.load_state_dict(checkpoint['gen_model_state_dict'])
         gen_model.to(device)
