@@ -203,7 +203,7 @@ if __name__ == '__main__':
     parser.add_argument('--generator_path', type=str)
 
     args = parser.parse_args()
-    model = args.model
+    model_name = args.model
     augmentation_size = args.augmentation_size
     epochs = args.epochs
     aug_model = args.aug_model
@@ -247,13 +247,15 @@ if __name__ == '__main__':
     if augmentation_size > 0:
         print("Augmenting data")
         list_of_eeg_segments, list_of_word_labels = flatten_EEG_labels(train_NE, train_EEG_segments)
-        if aug_model == "DCGAN_v2":
+        if aug_model == "DCGAN_v2_Textx":
             gen_model = Networks.GeneratorDCGAN_v2(100)
-            model_name = "DCGAN_v2"
+            model_name = "DCGAN_v2_Text"
 
         checkpoint = torch.load(
             fr"/users/gxb18167/Datasets/Checkpoints/NER/{aug_model}/{generator_path}",
             map_location=device)
+
+
         gen_model.load_state_dict(checkpoint['gen_model_state_dict'])
         gen_model.to(device)
         # Set the model to evaluation mode
@@ -305,7 +307,7 @@ if __name__ == '__main__':
     num_classes = 3
 
     # Instantiate the model
-    if model == 'BLSTM_v1':
+    if model_name == 'BLSTM_v1':
         model = Networks.BLSTMClassifier(input_size, hidden_size, num_layers, num_classes)
 
     model.to(device)
