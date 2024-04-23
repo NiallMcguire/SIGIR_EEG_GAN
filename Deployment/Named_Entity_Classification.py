@@ -248,7 +248,7 @@ if __name__ == '__main__':
         print("Augmenting data")
         list_of_eeg_segments, list_of_word_labels = flatten_EEG_labels(train_NE, train_EEG_segments)
         if aug_model == "DCGAN_v2_Text":
-            gen_model = Networks.GeneratorDCGAN_v2(100)
+            gen_model = Networks.GeneratorDCGAN_v2_Text(100)
             model_name = "DCGAN_v2_Text"
 
         checkpoint = torch.load(
