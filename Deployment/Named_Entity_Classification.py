@@ -155,13 +155,13 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
             EEG_word_level_embeddings)
 
         synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float).to(device)
-        synthetic_sample = synthetic_sample.resize(840).to(device)
+        synthetic_sample = synthetic_sample.resize(840).to('cpu')
         Named_Entity_Augmentation.append(synthetic_sample)
 
     if len(Named_Entity_Augmentation) < max_length:
         padding_count = max_length - len(Named_Entity_Augmentation)
         for i in range(padding_count):
-            Named_Entity_Augmentation.append(torch.zeros(840).to(device))
+            Named_Entity_Augmentation.append(torch.zeros(840).to('cpu'))
 
     return Named_Entity_Augmentation
 
@@ -274,9 +274,9 @@ if __name__ == '__main__':
         for i in range(len(sampled_words)):
             Named_Entity = sampled_words[i]
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
-            Synthetic_Named_Entity_cpu = Synthetic_Named_Entity.to('cpu').numpy()
+
             for j in range(len(Synthetic_Named_Entity)):
-                X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity_cpu, axis=0)
+                X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity, axis=0)
                 y_train_categorical.append(sampled_labels[i])
 
     # Convert numpy arrays to PyTorch tensors
