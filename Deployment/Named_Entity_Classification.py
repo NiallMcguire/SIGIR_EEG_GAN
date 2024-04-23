@@ -275,10 +275,15 @@ if __name__ == '__main__':
 
         for i in range(len(sampled_words)):
             Named_Entity = sampled_words[i]
+            label = sampled_labels[i]
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
             for j in range(len(Synthetic_Named_Entity)):
+                print("Label shape", label.shape)
+                print("Y_train_categorical shape", y_train_categorical.shape)
+                print("Y_train_categorical", y_train_categorical[0].shape)
+
                 X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity)
-                y_train_categorical = torch.cat((y_train_categorical, sampled_labels[i]), dim=0)
+                y_train_categorical = torch.cat((y_train_categorical, label), dim=0)
 
 
     # Convert numpy arrays to PyTorch tensors
