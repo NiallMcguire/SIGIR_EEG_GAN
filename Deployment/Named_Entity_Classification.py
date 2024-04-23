@@ -163,7 +163,7 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         for i in range(padding_count):
             Named_Entity_Augmentation.append(torch.zeros(840).to('cpu'))
 
-    Named_Entity_Augmentation = torch.stack(Named_Entity_Augmentation)
+    Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
 
     return Named_Entity_Augmentation
 
@@ -283,7 +283,7 @@ if __name__ == '__main__':
             print("Shape of y_train_categorical:", X_train_numpy.shape)
             print("Type of X_train_numpy:", type(X_train_numpy))
             for j in range(len(Synthetic_Named_Entity)):
-                X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity, axis=0)
+                X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity)
                 y_train_categorical.append(sampled_labels[i])
 
     # Convert numpy arrays to PyTorch tensors
