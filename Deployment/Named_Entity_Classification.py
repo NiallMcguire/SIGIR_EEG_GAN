@@ -271,6 +271,8 @@ if __name__ == '__main__':
         Augmentation_size = floor(int(len(NE_list) / 100 * augmentation_size))
         sampled_words = random.sample(pairs, Augmentation_size)
 
+        print("Augmentation Size: ", Augmentation_size)
+
         sampled_words, sampled_labels = zip(*sampled_words)
 
         for i in range(len(sampled_words)):
@@ -279,7 +281,6 @@ if __name__ == '__main__':
             label = label.unsqueeze(0)
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
             for j in range(len(Synthetic_Named_Entity)):
-
 
                 X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity)
                 y_train_categorical = torch.cat((y_train_categorical, label), dim=0)
