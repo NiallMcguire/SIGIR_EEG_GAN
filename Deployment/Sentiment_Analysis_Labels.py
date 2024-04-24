@@ -68,6 +68,6 @@ if __name__ == "__main__":
     Test_EEG_word_level_sentences_labels = get_sentiment_label(Test_EEG_word_level_sentences)
 
     #write the labels to a file
-    with open(r"C:\Users\gxb18167\PycharmProjects\EEG-To-Text\SIGIR_Development\EEG-GAN\EEG_Sentiment_Labels.pkl", 'wb') as file:
+    with open(r"/users/gxb18167/Datasets/ZuCo/EEG_Sentiment_Labels.pkl", 'wb') as file:
         pickle.dump(EEG_word_level_sentences_labels, file)
         pickle.dump(Test_EEG_word_level_sentences_labels, file)
