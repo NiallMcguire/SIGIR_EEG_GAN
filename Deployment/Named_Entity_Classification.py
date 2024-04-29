@@ -141,6 +141,7 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
 
     Named_Entity_Augmentation = []
 
+    print("Named Entity List: ", Named_Entity_List)
 
     for word in Named_Entity_List:
 
