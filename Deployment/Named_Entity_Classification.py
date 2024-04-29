@@ -283,7 +283,7 @@ if __name__ == '__main__':
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
             #print("length of Synthetic Named Entity: ", len(Synthetic_Named_Entity))
 
-            X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity)
+            X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity, axis=0)
             y_train = np.append(y_train, label)
 
 
