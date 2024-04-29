@@ -278,7 +278,7 @@ if __name__ == '__main__':
         Augmentation_size = floor(int(len(NE_list) / 100 * augmentation_size))
         sampled_words = random.sample(pairs, Augmentation_size)
 
-        print("Augmentation Size: ", Augmentation_size)
+        #print("Augmentation Size: ", Augmentation_size)
 
         sampled_words, sampled_labels = zip(*sampled_words)
 
@@ -287,13 +287,13 @@ if __name__ == '__main__':
             label = sampled_labels[i]
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
             Synthetic_Named_Entity = np.tile(Synthetic_Named_Entity, (len(X_train_numpy), 1, 1))
-            print("Synthetic_Named_Entity shape", Synthetic_Named_Entity.shape)
-            #X_train_numpy = np.concatenate((X_train_numpy, Synthetic_Named_Entity))
-            #y_train = np.append(y_train, label)
+            #print("Synthetic_Named_Entity shape", Synthetic_Named_Entity.shape)
+            X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity, axis=0)
+            y_train = np.append(y_train, label)
 
 
-    print("Length of Train after aug:", len(X_train_numpy))
-    print("Length of Train Label after aug:", len(y_train))
+    #print("Length of Train after aug:", len(X_train_numpy))
+    #print("Length of Train Label after aug:", len(y_train))
 
     # Convert numpy arrays to PyTorch tensors
 
