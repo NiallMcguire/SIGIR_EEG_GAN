@@ -156,6 +156,8 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
 
         synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float32).to(device)
         synthetic_sample = synthetic_sample.resize(840).to('cpu')
+        print("Synthetic Sample Shape: ", synthetic_sample.shape)
+
         Named_Entity_Augmentation.append(synthetic_sample)
 
     if len(Named_Entity_Augmentation) < max_length:
