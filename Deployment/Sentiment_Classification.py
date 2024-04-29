@@ -1,6 +1,7 @@
 import pickle
 import re
 import random
+import os
 import numpy as np
 from keras.utils import to_categorical
 from sklearn.preprocessing import LabelEncoder
@@ -136,6 +137,108 @@ if __name__ == '__main__':
 
     # Device configuration
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+    # Define model parameters
+    input_size = 840
+    hidden_size = 64
+    num_layers = 2
+    num_classes = 2
+
+    if model_name == 'BLSTM_v1':
+        model = Networks.BLSTMClassifier(input_size, hidden_size, num_layers, num_classes)
+        model.to(device)
+
+        # Define loss function and optimizer
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+        num_epochs = epochs
+
+        best_valid_loss = float('inf')
+        best_model_state = None
+        patience = 50  # Number of epochs to wait for improvement
+        counter = 0  # Counter for patience
+
+        folder_path = f"/users/gxb18167/Datasets/Sentiment/{model}"
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+        save_path = folder_path + f'/Aug_size_{augmentation_size}_Epochs_{epochs}_Aug_Model_{aug_model}_best_model.pth'
+
+        for epoch in range(num_epochs):
+            model.train()
+            total_loss = 0
+
+            for batch_x, batch_y in train_loader:
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+
+                optimizer.zero_grad()
+
+                outputs = model(batch_x)
+
+                # Convert class probabilities to class indices
+                _, predicted = torch.max(outputs, 1)
+
+                loss = criterion(outputs, batch_y.squeeze())  # Ensure target tensor is Long type
+                loss.backward()
+                optimizer.step()
+
+                total_loss += loss.item()
+
+            avg_loss = total_loss / len(train_loader)
+            print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {avg_loss:.4f}')
+
+            # Validation
+            model.eval()
+            with torch.no_grad():
+                valid_loss = 0
+                for batch_x, batch_y in val_loader:
+                    batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                    outputs = model(batch_x)
+                    loss = criterion(outputs, batch_y.squeeze())
+                    valid_loss += loss.item()
+
+            avg_valid_loss = valid_loss / len(val_loader)
+            print(f'Validation Loss: {avg_valid_loss:.4f}')
+
+            # Early stopping and saving the best model
+            if avg_valid_loss < best_valid_loss:
+                best_valid_loss = avg_valid_loss
+                best_model_state = model.state_dict()
+                counter = 0
+            else:
+                counter += 1
+
+            # if counter >= patience:
+            # print("Early stopping!")
+            # break
+
+        # Save the best model state to a file
+        if best_model_state is not None:
+            torch.save(best_model_state, save_path)
+
+        # Test the model
+        model.load_state_dict(torch.load(save_path))
+        model.eval()
+        with torch.no_grad():
+            correct = 0
+            total = 0
+            for batch_x, batch_y in test_loader:
+                batch_x, batch_y = batch_x.to(device), batch_y.to(device)
+                outputs = model(batch_x)
+                _, predicted = torch.max(outputs, 1)
+                total += batch_y.size(0)
+                correct += (predicted == torch.argmax(batch_y, 1)).sum().item()
+
+            accuracy = correct / total
+            print(f'Test Accuracy: {accuracy:.4f}')
+
+        # save test accuracy
+        with open(
+                f"/users/gxb18167/Datasets/NER/{model}/Aug_size_{augmentation_size}_Epochs_{epochs}_Aug_Model_{aug_model}_test_accuracy.txt",
+                "w") as f:
+            f.write(f"Test Accuracy: {accuracy:.4f}")
 
 
 
