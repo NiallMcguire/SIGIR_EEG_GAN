@@ -140,6 +140,15 @@ if __name__ == '__main__':
     train_labels_encoded = encode_labels(train_labels)
     test_labels_encoded = encode_labels(test_labels)
 
+    # Split the data into training and validation sets
+    validation_size = int(0.2 * len(X_train))
+    X_val = X_train[:validation_size]
+    y_val = train_labels_encoded[:validation_size]
+    X_train_numpy = X_train[validation_size:]
+    y_train = train_labels_encoded[validation_size:]
+
+
+
     x_train_tensor = torch.tensor(X_train, dtype=torch.float32)
     y_train_tensor = torch.tensor(train_labels_encoded, dtype=torch.float32)
 
@@ -159,8 +168,6 @@ if __name__ == '__main__':
 
 
     # Device configuration
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
 
     # Define model parameters
     input_size = 840
