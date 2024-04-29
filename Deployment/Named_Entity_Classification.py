@@ -154,6 +154,8 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         EEG_synthetic_denormalized = (g_output * np.max(np.abs(EEG_word_level_embeddings))) + np.mean(
             EEG_word_level_embeddings)
 
+        print("D-type:", EEG_synthetic_denormalized[0][0].dtype)
+
         synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float32).to(device)
         synthetic_sample = synthetic_sample.resize(840).to('cpu')
         print("Synthetic Sample Shape inside: ", synthetic_sample.shape)
