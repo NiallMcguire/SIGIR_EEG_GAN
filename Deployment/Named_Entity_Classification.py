@@ -160,16 +160,16 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float32).to(device)
 
         synthetic_sample = synthetic_sample.resize(840)
-        #Named_Entity_Augmentation.append(synthetic_sample.to('cpu'))
+        Named_Entity_Augmentation.append(synthetic_sample)
 
     if len(Named_Entity_Augmentation) < max_length:
         padding_count = max_length - len(Named_Entity_Augmentation)
         for i in range(padding_count):
-            Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32).to('cpu'))
+            Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32))
 
     Named_Entity_Augmentation = torch.stack(Named_Entity_Augmentation).numpy()
 
-    return Named_Entity_Augmentation
+    return Named_Entity_Augmentation.to("cpu")
 
 def flatten_EEG_labels(NE_list, EEG_list):
 
@@ -285,7 +285,6 @@ if __name__ == '__main__':
             Named_Entity = sampled_words[i]
             label = sampled_labels[i]
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
-
             Synthetic_Named_Entity = np.tile(Synthetic_Named_Entity, (len(X_train_numpy), 1, 1))
             print("Synthetic_Named_Entity shape", Synthetic_Named_Entity.shape)
             X_train_numpy = np.concatenate((X_train_numpy, Synthetic_Named_Entity))
