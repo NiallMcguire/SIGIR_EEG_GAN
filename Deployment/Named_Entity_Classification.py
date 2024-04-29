@@ -166,9 +166,9 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
 
     Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
     print("Synthetic Named Entity shape inside", Named_Entity_Augmentation.shape)
-    print("Sample shape", Named_Entity_Augmentation[0].shape, type(Named_Entity_Augmentation[0]))
+    print("Sample shape", Named_Entity_Augmentation[0][0].shape, type(Named_Entity_Augmentation[0][0]))
 
-    print("Padding shape", Named_Entity_Augmentation[-1].shape, type(Named_Entity_Augmentation[-1]))
+    print("Padding shape", Named_Entity_Augmentation[-1][0].shape, type(Named_Entity_Augmentation[-1][0]))
 
     return Named_Entity_Augmentation
 
