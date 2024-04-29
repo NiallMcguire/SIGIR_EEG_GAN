@@ -4,9 +4,12 @@ import random
 import os
 import numpy as np
 from keras.utils import to_categorical
-from sklearn.preprocessing import LabelEncoder
 import torch
 from torch.utils.data import DataLoader, TensorDataset
+# classifier
+
+import torch.nn as nn
+import torch.optim as optim
 
 
 def read_EEG_embeddings_labels(path):
@@ -130,10 +133,7 @@ if __name__ == '__main__':
     # Create the train loader
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 
-    # classifier
-    import torch
-    import torch.nn as nn
-    import torch.optim as optim
+
 
     # Device configuration
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
