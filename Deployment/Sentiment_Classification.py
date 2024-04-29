@@ -102,10 +102,16 @@ if __name__ == '__main__':
     parser.add_argument('--aug_model', type=str)
     parser.add_argument('--generator_path', type=str)
 
+    args = parser.parse_args()
+    model_name = args.model
+    augmentation_size = args.augmentation_size
+    epochs = args.epochs
+    aug_model = args.aug_model
+    generator_path = args.generator_path
 
-    train_path = r"C:\Users\gxb18167\PycharmProjects\EEG-To-Text\SIGIR_Development\EEG-GAN\EEG_Text_Pairs_Sentence.pkl"
-    test_path = r"C:\Users\gxb18167\PycharmProjects\EEG-To-Text\SIGIR_Development\EEG-GAN\Test_EEG_Text_Pairs_Sentence.pkl"
 
+    train_path = r"/users/gxb18167/Datasets/ZuCo/EEG_Text_Pairs_Sentence.pkl"
+    test_path = r"/users/gxb18167/Datasets/ZuCo/Test_EEG_Text_Pairs_Sentence.pkl"
 
     # Load the EEG embeddings and labels
     EEG_word_level_embeddings, EEG_word_level_labels = read_EEG_embeddings_labels(train_path)
@@ -117,7 +123,7 @@ if __name__ == '__main__':
                                                                                     Test_EEG_word_level_embeddings)
 
     with open(
-            r'C:\Users\gxb18167\PycharmProjects\SIGIR_EEG_GAN\Development\Sentiment_Analysis\EEG_Sentiment_Labels.pkl',
+            r'/users/gxb18167/Datasets/ZuCo/EEG_Sentiment_Labels.pkl',
             'rb') as f:
         # read two arrays
         train_labels = pickle.load(f)
