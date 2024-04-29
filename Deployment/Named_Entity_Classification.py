@@ -149,7 +149,10 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         word_embedding_tensor = word_embedding_tensor.unsqueeze(0)
 
         g_output = generate_samples(generator_name, gen_model, input_z, word_embedding_tensor)
+
+
         g_output = g_output.to('cpu')
+        print("g_output shape", g_output.shape)
 
         EEG_synthetic_denormalized = (g_output * np.max(np.abs(EEG_word_level_embeddings))) + np.mean(
             EEG_word_level_embeddings)
@@ -165,10 +168,7 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
             Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32).to('cpu'))
 
     Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
-    print("Synthetic Named Entity shape inside", Named_Entity_Augmentation.shape)
-    print("Sample shape", Named_Entity_Augmentation[0][0].shape, type(Named_Entity_Augmentation[0][0]))
 
-    print("Padding shape", Named_Entity_Augmentation[-1][0].shape, type(Named_Entity_Augmentation[-1][0]))
 
     return Named_Entity_Augmentation
 
@@ -286,16 +286,8 @@ if __name__ == '__main__':
             Named_Entity = sampled_words[i]
             label = sampled_labels[i]
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
-
-            print("length of Synthetic Named Entity: ", len(Synthetic_Named_Entity))
-            print("length of Synthetic Named Entity: ", len(Synthetic_Named_Entity[0]))
-            print("Synthetic Named Entity shape", Synthetic_Named_Entity.shape)
-
-            print("Train shape", X_train_numpy.shape)
-
-
-            #X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity, axis=0)
-            #y_train = np.append(y_train, label)
+            X_train_numpy = np.concatenate((X_train_numpy, Synthetic_Named_Entity))
+            y_train = np.append(y_train, label)
 
 
     print("Length of Train after aug:", len(X_train_numpy))
