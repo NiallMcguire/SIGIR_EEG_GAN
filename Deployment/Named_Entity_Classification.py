@@ -156,8 +156,8 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
 
         synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float32).to(device)
 
-        synthetic_sample = synthetic_sample.resize(840).to('cpu')
-        Named_Entity_Augmentation.append(synthetic_sample)
+        synthetic_sample = synthetic_sample.resize(840)
+        Named_Entity_Augmentation.append(synthetic_sample.to('cpu'))
 
     if len(Named_Entity_Augmentation) < max_length:
         padding_count = max_length - len(Named_Entity_Augmentation)
@@ -166,6 +166,9 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
 
     Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
     print("Synthetic Named Entity shape inside", Named_Entity_Augmentation.shape)
+    print("Sample shape", Named_Entity_Augmentation[0].shape, type(Named_Entity_Augmentation[0]))
+
+    print("Padding shape", Named_Entity_Augmentation[-1].shape, type(Named_Entity_Augmentation[-1]))
 
     return Named_Entity_Augmentation
 
