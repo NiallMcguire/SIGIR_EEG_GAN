@@ -319,8 +319,9 @@ if __name__ == '__main__':
     # Instantiate the model
     if model_name == 'BLSTM_v1':
         model = Networks.BLSTMClassifier(input_size, hidden_size, num_layers, num_classes)
+        model.to(device)
 
-    model.to(device)
+
     # Define loss function and optimizer
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
