@@ -170,10 +170,10 @@ if __name__ == '__main__':
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
 
     # Create the validation loader
-    val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False)
 
     # Create the test loader
-    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
 
 
 
