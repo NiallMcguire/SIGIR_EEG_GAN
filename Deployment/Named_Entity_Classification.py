@@ -172,7 +172,7 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
     Named_Entity_Augmentation = torch.stack(Named_Entity_Augmentation).to(device)
     Named_Entity_Augmentation = Named_Entity_Augmentation.to('cpu').numpy()
 
-    return Named_Entity_Augmentation.to("cpu")
+    return Named_Entity_Augmentation
 
 def flatten_EEG_labels(NE_list, EEG_list):
 
