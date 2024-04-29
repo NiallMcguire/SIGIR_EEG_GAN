@@ -166,6 +166,8 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
             Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32).to('cpu'))
 
     Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
+    print("Synthetic Named Entity shape inside", Named_Entity_Augmentation.shape)
+
     return Named_Entity_Augmentation
 
 def flatten_EEG_labels(NE_list, EEG_list):
