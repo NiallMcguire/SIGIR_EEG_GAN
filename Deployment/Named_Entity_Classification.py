@@ -145,7 +145,7 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         word_embedding = word_embeddings[word]
         input_z = create_noise(1, 100, "uniform").to(device)
 
-        word_embedding_tensor = torch.tensor(word_embedding, dtype=torch.float)
+        word_embedding_tensor = torch.tensor(word_embedding, dtype=torch.float32)
         word_embedding_tensor = word_embedding_tensor.unsqueeze(0)
 
         g_output = generate_samples(generator_name, gen_model, input_z, word_embedding_tensor)
@@ -154,16 +154,18 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         EEG_synthetic_denormalized = (g_output * np.max(np.abs(EEG_word_level_embeddings))) + np.mean(
             EEG_word_level_embeddings)
 
-        synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float).to(device)
+        synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float32).to(device)
         synthetic_sample = synthetic_sample.resize(840).to('cpu')
         Named_Entity_Augmentation.append(synthetic_sample)
 
     if len(Named_Entity_Augmentation) < max_length:
         padding_count = max_length - len(Named_Entity_Augmentation)
         for i in range(padding_count):
-            Named_Entity_Augmentation.append(torch.zeros(840).to('cpu'))
+            Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32).to('cpu'))
 
     Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
+
+
 
     return Named_Entity_Augmentation
 
