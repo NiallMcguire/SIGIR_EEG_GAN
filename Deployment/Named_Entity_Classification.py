@@ -141,6 +141,7 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
 
     Named_Entity_Augmentation = []
 
+
     for word in Named_Entity_List:
 
         word_embedding = word_embeddings[word]
@@ -165,7 +166,7 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
     if len(Named_Entity_Augmentation) < max_length:
         padding_count = max_length - len(Named_Entity_Augmentation)
         for i in range(padding_count):
-            Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32))
+            Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32).to(device))
 
     Named_Entity_Augmentation = torch.stack(Named_Entity_Augmentation).numpy()
 
