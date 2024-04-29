@@ -278,7 +278,7 @@ if __name__ == '__main__':
         Augmentation_size = floor(int(len(NE_list) / 100 * augmentation_size))
         sampled_words = random.sample(pairs, Augmentation_size)
 
-        #print("Augmentation Size: ", Augmentation_size)
+        print("Augmentation Size: ", Augmentation_size)
 
         sampled_words, sampled_labels = zip(*sampled_words)
 
@@ -292,8 +292,8 @@ if __name__ == '__main__':
             y_train = np.append(y_train, label)
 
 
-    #print("Length of Train after aug:", len(X_train_numpy))
-    #print("Length of Train Label after aug:", len(y_train))
+    print("Length of Train after aug:", len(X_train_numpy))
+    print("Length of Train Label after aug:", len(y_train))
 
     # Convert numpy arrays to PyTorch tensors
 
