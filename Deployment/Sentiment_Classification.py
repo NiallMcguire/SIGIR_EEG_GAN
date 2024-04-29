@@ -152,18 +152,28 @@ if __name__ == '__main__':
     x_train_tensor = torch.tensor(X_train, dtype=torch.float32)
     y_train_tensor = torch.tensor(train_labels_encoded, dtype=torch.float32)
 
+    x_val_tensor = torch.tensor(X_val, dtype=torch.float32)
+    y_val_tensor = torch.tensor(y_val, dtype=torch.float32)
+
     x_test_tensor = torch.tensor(X_test, dtype=torch.float32)
     y_test_tensor = torch.tensor(test_labels_encoded, dtype=torch.float32)
 
     # Create a custom dataset
     train_dataset = TensorDataset(x_train_tensor, y_train_tensor)
     test_dataset = TensorDataset(x_test_tensor, y_test_tensor)
+    val_dataset = TensorDataset(x_val_tensor, y_val_tensor)
 
     # Define batch size
     batch_size = 32  # Adjust according to your preference
 
     # Create the train loader
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+
+    # Create the validation loader
+    val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=True)
+
+    # Create the test loader
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
 
 
 
