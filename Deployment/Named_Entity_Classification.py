@@ -157,6 +157,8 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         print("D-type:", EEG_synthetic_denormalized[0][0].dtype)
 
         synthetic_sample = torch.tensor(EEG_synthetic_denormalized[0][0], dtype=torch.float32).to(device)
+        print("D-type: ", synthetic_sample.dtype)
+
         synthetic_sample = synthetic_sample.resize(840).to('cpu')
         print("Synthetic Sample Shape inside: ", synthetic_sample.shape)
 
