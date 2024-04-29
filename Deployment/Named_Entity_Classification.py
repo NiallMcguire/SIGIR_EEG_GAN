@@ -251,7 +251,7 @@ if __name__ == '__main__':
         list_of_eeg_segments, list_of_word_labels = flatten_EEG_labels(train_NE, train_EEG_segments)
         if aug_model == "DCGAN_v2_Text":
             gen_model = Networks.GeneratorDCGAN_v2_Text(100, 50)
-            model_name = "DCGAN_v2_Text"
+
 
         checkpoint = torch.load(
             fr"/users/gxb18167/Datasets/Checkpoints/NER/{aug_model}/{generator_path}",
@@ -317,6 +317,8 @@ if __name__ == '__main__':
     num_classes = 3
 
     # Instantiate the model
+    print(model_name)
+
     if model_name == 'BLSTM_v1':
         model = Networks.BLSTMClassifier(input_size, hidden_size, num_layers, num_classes)
         model.to(device)
