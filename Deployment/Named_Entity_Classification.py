@@ -174,7 +174,8 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
     for i in range(0, 7):
         Named_Entity_Augmentation.append(torch.zeros(840))
 
-    Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
+    Named_Entity_Augmentation = torch.stack(Named_Entity_Augmentation).numpy()
+
 
 
     return Named_Entity_Augmentation
