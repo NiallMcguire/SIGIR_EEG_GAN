@@ -168,7 +168,9 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         for i in range(padding_count):
             Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32).to(device))
 
-    Named_Entity_Augmentation = torch.stack(Named_Entity_Augmentation).numpy().to(device)
+
+    Named_Entity_Augmentation = torch.stack(Named_Entity_Augmentation).to(device)
+    Named_Entity_Augmentation = Named_Entity_Augmentation.to('cpu').numpy()
 
     return Named_Entity_Augmentation.to("cpu")
 
