@@ -138,6 +138,7 @@ def generate_samples(generator_name, g_model, input_z, input_t):
 
 
 def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_embeddings, Named_Entity_List, max_length = 7):
+    '''
     Named_Entity_Augmentation = []
 
     for word in Named_Entity_List:
@@ -168,9 +169,9 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
 
     #Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
 
+    '''
     Named_Entity_Augmentation = []
     for i in range(0, 7):
-
         Named_Entity_Augmentation.append(torch.zeros(840))
 
     Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
