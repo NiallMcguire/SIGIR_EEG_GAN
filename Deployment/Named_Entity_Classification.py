@@ -293,12 +293,13 @@ if __name__ == '__main__':
     # Convert numpy arrays to PyTorch tensors
 
     y_train_categorical = encode_labels(y_train)
+    y_val_categorical = encode_labels(y_val)
 
     x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train_categorical, dtype=torch.float32)  # Assuming your labels are integers
 
     x_val_tensor = torch.tensor(X_val, dtype=torch.float32)
-    y_val_tensor = torch.tensor(y_val, dtype=torch.float32)  # Assuming your labels are integers
+    y_val_tensor = torch.tensor(y_val_categorical, dtype=torch.float32)  # Assuming your labels are integers
 
     x_test_tensor = torch.tensor(X_test_numpy, dtype=torch.float32)
     y_test_tensor = torch.tensor(y_test_categorical, dtype=torch.float32)
