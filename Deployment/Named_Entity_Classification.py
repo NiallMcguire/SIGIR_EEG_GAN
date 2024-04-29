@@ -286,6 +286,8 @@ if __name__ == '__main__':
             Named_Entity = sampled_words[i]
             label = sampled_labels[i]
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
+            print("X_train_numpy shape", X_train_numpy.shape)
+            print("Synthetic_Named_Entity shape", Synthetic_Named_Entity.shape)
             X_train_numpy = np.concatenate((X_train_numpy, Synthetic_Named_Entity))
             y_train = np.append(y_train, label)
 
