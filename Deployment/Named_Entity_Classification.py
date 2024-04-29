@@ -166,6 +166,13 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         for i in range(padding_count):
             Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32).to('cpu'))
 
+    #Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
+
+    Named_Entity_Augmentation = []
+    for i in range(0, 7):
+
+        Named_Entity_Augmentation.append(torch.zeros(840))
+
     Named_Entity_Augmentation = np.array(Named_Entity_Augmentation)
 
 
