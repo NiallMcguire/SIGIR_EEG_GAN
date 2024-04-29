@@ -281,7 +281,7 @@ if __name__ == '__main__':
 
         sampled_words, sampled_labels = zip(*sampled_words)
 
-        for i in range(len(sampled_words)):
+        for i in range(10):
             Named_Entity = sampled_words[i]
             label = sampled_labels[i]
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
