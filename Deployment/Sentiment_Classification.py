@@ -1,3 +1,4 @@
+import argparse
 import pickle
 import re
 import random
@@ -5,9 +6,9 @@ import os
 import numpy as np
 from keras.utils import to_categorical
 import torch
+from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import DataLoader, TensorDataset
-# classifier
-
+import Networks
 import torch.nn as nn
 import torch.optim as optim
 
@@ -85,12 +86,28 @@ def reshape_data(X):
 
 
 if __name__ == '__main__':
+    print(torch.__version__)
+    print("GPU Available:", torch.cuda.is_available())
+
+    if torch.cuda.is_available():
+        device = torch.device("cuda:0")
+    else:
+        device = "cpu"
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--model', type=str)
+    parser.add_argument('--augmentation_size', type=int)
+    parser.add_argument('--epochs', type=int)
+    parser.add_argument('--aug_model', type=str)
+    parser.add_argument('--generator_path', type=str)
+
+
     train_path = r"C:\Users\gxb18167\PycharmProjects\EEG-To-Text\SIGIR_Development\EEG-GAN\EEG_Text_Pairs_Sentence.pkl"
     test_path = r"C:\Users\gxb18167\PycharmProjects\EEG-To-Text\SIGIR_Development\EEG-GAN\Test_EEG_Text_Pairs_Sentence.pkl"
 
 
     # Load the EEG embeddings and labels
-
     EEG_word_level_embeddings, EEG_word_level_labels = read_EEG_embeddings_labels(train_path)
     Test_EEG_word_level_embeddings, Test_EEG_word_level_labels = read_EEG_embeddings_labels(test_path)
 
@@ -236,7 +253,7 @@ if __name__ == '__main__':
 
         # save test accuracy
         with open(
-                f"/users/gxb18167/Datasets/NER/{model}/Aug_size_{augmentation_size}_Epochs_{epochs}_Aug_Model_{aug_model}_test_accuracy.txt",
+                f"/users/gxb18167/Datasets/Sentiment/{model}/Aug_size_{augmentation_size}_Epochs_{epochs}_Aug_Model_{aug_model}_test_accuracy.txt",
                 "w") as f:
             f.write(f"Test Accuracy: {accuracy:.4f}")
 
