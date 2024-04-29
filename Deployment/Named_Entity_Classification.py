@@ -152,7 +152,6 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
 
         g_output = generate_samples(generator_name, gen_model, input_z, word_embedding_tensor)
 
-
         g_output = g_output.to('cpu')
 
         EEG_synthetic_denormalized = (g_output * np.max(np.abs(EEG_word_level_embeddings))) + np.mean(
@@ -167,7 +166,6 @@ def augment_dataset(gen_model, generator_name, word_embeddings, EEG_word_level_e
         padding_count = max_length - len(Named_Entity_Augmentation)
         for i in range(padding_count):
             Named_Entity_Augmentation.append(torch.zeros(840, dtype=torch.float32).to(device))
-
 
     Named_Entity_Augmentation = torch.stack(Named_Entity_Augmentation).to(device)
     Named_Entity_Augmentation = Named_Entity_Augmentation.to('cpu').numpy()
@@ -290,8 +288,8 @@ if __name__ == '__main__':
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
             Synthetic_Named_Entity = np.tile(Synthetic_Named_Entity, (len(X_train_numpy), 1, 1))
             print("Synthetic_Named_Entity shape", Synthetic_Named_Entity.shape)
-            X_train_numpy = np.concatenate((X_train_numpy, Synthetic_Named_Entity))
-            y_train = np.append(y_train, label)
+            #X_train_numpy = np.concatenate((X_train_numpy, Synthetic_Named_Entity))
+            #y_train = np.append(y_train, label)
 
 
     print("Length of Train after aug:", len(X_train_numpy))
