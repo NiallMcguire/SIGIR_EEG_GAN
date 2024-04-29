@@ -242,7 +242,7 @@ if __name__ == '__main__':
 
     X_test_numpy = np.array(X_test)
     X_test_numpy = reshape_data(X_test_numpy)
-    y_test_categorical = encode_labels(y_test)
+    #y_test_categorical = encode_labels(y_test)
 
 
 
@@ -265,7 +265,7 @@ if __name__ == '__main__':
         # Set the model to evaluation mode
         gen_model.eval()
 
-        pairs = list(zip(NE_list, y_train_categorical))
+        pairs = list(zip(NE_list, y_test))
 
 
         Augmentation_size = floor(int(len(NE_list) / 100 * augmentation_size))
@@ -278,12 +278,11 @@ if __name__ == '__main__':
         for i in range(len(sampled_words)):
             Named_Entity = sampled_words[i]
             label = sampled_labels[i]
-            label = label.unsqueeze(0)
             Synthetic_Named_Entity = augment_dataset(gen_model, model_name, word_embeddings,list_of_eeg_segments, Named_Entity)
-            #for j in range(len(Synthetic_Named_Entity)):
+            for j in range(len(Synthetic_Named_Entity)):
 
-                #X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity)
-                #y_train_categorical = torch.cat((y_train_categorical, label), dim=0)
+                X_train_numpy = np.append(X_train_numpy, Synthetic_Named_Entity)
+                y_test = np.append(y_test, label)
 
 
     # Convert numpy arrays to PyTorch tensors
