@@ -224,7 +224,7 @@ if __name__ == '__main__':
     X_train, y_train, NE_list = padding_x_y(train_EEG_segments, train_Classes, train_NE)
     X_train_numpy = np.array(X_train)
     X_train_numpy = reshape_data(X_train_numpy)
-    y_train_categorical = encode_labels(y_train)
+    #y_train_categorical = encode_labels(y_train)
 
     NE_List_Flat = [word for sublist in NE_list for word in sublist]
     word_embeddings = create_word_label_embeddings(NE_List_Flat)
@@ -232,9 +232,9 @@ if __name__ == '__main__':
 
     validation_size = int(0.2 * len(X_train_numpy))
     X_val = X_train_numpy[:validation_size]
-    y_val = y_train_categorical[:validation_size]
+    y_val = y_train[:validation_size]
     X_train_numpy = X_train_numpy[validation_size:]
-    y_train_categorical = y_train_categorical[validation_size:]
+    y_train = y_train[validation_size:]
 
 
     X_test, y_test, NE_list_test = padding_x_y(test_EEG_segments, test_Classes, test_NE)
@@ -242,9 +242,11 @@ if __name__ == '__main__':
 
     X_test_numpy = np.array(X_test)
     X_test_numpy = reshape_data(X_test_numpy)
-    #y_test_categorical = encode_labels(y_test)
+    y_test_categorical = encode_labels(y_test)
 
 
+    print("Length of Train before aug:", len(X_train_numpy))
+    print("Length of Train Label before aug:", len(y_train))
 
     if augmentation_size > 0:
         print("Augmenting data")
@@ -265,7 +267,7 @@ if __name__ == '__main__':
         # Set the model to evaluation mode
         gen_model.eval()
 
-        pairs = list(zip(NE_list, y_test))
+        pairs = list(zip(NE_list, y_train))
 
 
         Augmentation_size = floor(int(len(NE_list) / 100 * augmentation_size))
@@ -285,7 +287,13 @@ if __name__ == '__main__':
                 y_test = np.append(y_test, label)
 
 
+    print("Length of Train after aug:", len(X_train_numpy))
+    print("Length of Train Label after aug:", len(y_train))
+
     # Convert numpy arrays to PyTorch tensors
+
+    y_train_categorical = encode_labels(y_train)
+
     x_train_tensor = torch.tensor(X_train_numpy, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train_categorical, dtype=torch.float32)  # Assuming your labels are integers
 
