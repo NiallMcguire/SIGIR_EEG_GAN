@@ -4,13 +4,12 @@ import re
 import random
 import os
 import numpy as np
-from keras.utils import to_categorical
 import torch
-from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import DataLoader, TensorDataset
 import Networks
 import torch.nn as nn
 import torch.optim as optim
+import torch.nn.functional as F
 
 
 def read_EEG_embeddings_labels(path):
@@ -22,12 +21,17 @@ def read_EEG_embeddings_labels(path):
 
 
 def encode_labels(y):
-    label_encoder = LabelEncoder()
-    encoded_labels = label_encoder.fit_transform(y)
+    label_encoder = {label: idx for idx, label in enumerate(set(y))}
+    encoded_labels = [label_encoder[label] for label in y]
 
-    y_categorical = to_categorical(encoded_labels)
+    # Step 2: Convert numerical labels to tensor
+    encoded_labels_tensor = torch.tensor(encoded_labels)
 
-    return y_categorical
+    # Step 3: Convert numerical labels tensor to one-hot encoded tensor
+    num_classes = len(label_encoder)
+    y_onehot = F.one_hot(encoded_labels_tensor, num_classes=num_classes).float()
+
+    return y_onehot
 
 
 def get_sentences_EEG(labels, EEG_embeddings):
