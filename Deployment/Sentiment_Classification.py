@@ -19,7 +19,6 @@ def read_EEG_embeddings_labels(path):
     return EEG_word_level_embeddings, EEG_word_level_labels
 
 
-
 def encode_labels(y):
     label_encoder = {label: idx for idx, label in enumerate(set(y))}
     encoded_labels = [label_encoder[label] for label in y]
